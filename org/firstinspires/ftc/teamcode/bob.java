@@ -1,6 +1,6 @@
 public class bob {
-  public static void main(Strings[] args){
-system.out.println("Hello");
-system.out.println("AB Playz");
+public static void main(String[] args){
+System.out.println("Hello");
+System.out.println("AB Playz");
 }
 }
