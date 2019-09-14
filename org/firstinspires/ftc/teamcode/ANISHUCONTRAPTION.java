@@ -42,6 +42,8 @@ import java.util.List;
 public class ANISHUCONTRAPTION extends LinearOpMode {
 private DcMotor lift;
 private DcMotor extend;
+float PowerX;
+float PowerY;
 
     @Override public void runOpMode() {
         telemetry.addData(">", "Press Play to start tracking");
@@ -59,7 +61,7 @@ private DcMotor extend;
           PowerX = gamepad1.left_stick_y;
           PowerY = gamepad1.right_stick_y;
           extend.setPower(PowerX);
-          lift.setPower(PowerY;)
+          lift.setPower(PowerY);
         }
     }
 }

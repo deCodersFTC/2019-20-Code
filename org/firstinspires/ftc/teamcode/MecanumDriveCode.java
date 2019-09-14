@@ -73,7 +73,7 @@ public class MecanumDriveCode extends LinearOpMode {
         LeftDriveFront  = hardwareMap.get(DcMotor.class, "LeftDriveFront");
         RightDriveFront = hardwareMap.get(DcMotor.class, "RightDriveFront");
         LeftDriveBack  = hardwareMap.get(DcMotor.class, "LeftDriveBack");
-        RightDriveBack = hardwareMap.get(DcMotor.class, "RightDriveBack"
+        RightDriveBack = hardwareMap.get(DcMotor.class, "RightDriveBack");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
