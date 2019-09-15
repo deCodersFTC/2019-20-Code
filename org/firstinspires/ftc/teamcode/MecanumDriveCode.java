@@ -60,6 +60,10 @@ public class MecanumDriveCode extends LinearOpMode {
     private DcMotor RightDriveFront;
     private DcMotor LeftDriveBack;
     private DcMotor RightDriveBack;
+    private DcMotor lift;
+    private DcMotor extend;
+    float PowerX;
+    float PowerY;
 
 
     @Override
@@ -75,12 +79,18 @@ public class MecanumDriveCode extends LinearOpMode {
         LeftDriveBack  = hardwareMap.get(DcMotor.class, "bl");
         RightDriveBack = hardwareMap.get(DcMotor.class, "br");
 
+        lift  = hardwareMap.get(DcMotor.class, "lift");
+        extend = hardwareMap.get(DcMotor.class, "extend");
+
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         LeftDriveFront.setDirection(DcMotor.Direction.FORWARD);
         RightDriveFront.setDirection(DcMotor.Direction.REVERSE);
         LeftDriveBack.setDirection(DcMotor.Direction.FORWARD);
         RightDriveBack.setDirection(DcMotor.Direction.REVERSE);
+
+        lift.setDirection(DcMotor.Direction.FORWARD);
+        extend.setDirection(DcMotor.Direction.FORWARD);
 
 
         // Wait for the game to start (driver presses PLAY)
@@ -129,6 +139,11 @@ public class MecanumDriveCode extends LinearOpMode {
                 RightDriveFront.setPower(RightFrontPower);
                 RightDriveBack.setPower(RightBackPower);
             }
+
+            PowerX = gamepad2.left_stick_y;
+            PowerY = gamepad2.right_stick_y;
+            extend.setPower(PowerX);
+            lift.setPower(PowerY);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());

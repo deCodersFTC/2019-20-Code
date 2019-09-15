@@ -58,8 +58,8 @@ float PowerY;
         extend.setDirection(DcMotor.Direction.FORWARD);
 
         while (opModeIsActive()) {
-          PowerX = gamepad1.left_stick_y;
-          PowerY = gamepad1.right_stick_y;
+          PowerX = gamepad2.left_stick_y;
+          PowerY = gamepad2.right_stick_y;
           extend.setPower(PowerX);
           lift.setPower(PowerY);
         }
