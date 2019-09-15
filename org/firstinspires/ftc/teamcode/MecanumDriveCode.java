@@ -143,7 +143,7 @@ public class MecanumDriveCode extends LinearOpMode {
             PowerX = gamepad2.left_stick_y;
             PowerY = gamepad2.right_stick_y;
             extend.setPower(PowerX);
-            lift.setPower(PowerY - 0.9);
+            lift.setPower(PowerY);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
