@@ -70,10 +70,10 @@ public class MecanumDriveCode extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        LeftDriveFront  = hardwareMap.get(DcMotor.class, "LeftDriveFront");
-        RightDriveFront = hardwareMap.get(DcMotor.class, "RightDriveFront");
-        LeftDriveBack  = hardwareMap.get(DcMotor.class, "LeftDriveBack");
-        RightDriveBack = hardwareMap.get(DcMotor.class, "RightDriveBack");
+        LeftDriveFront  = hardwareMap.get(DcMotor.class, "fl");
+        RightDriveFront = hardwareMap.get(DcMotor.class, "fr");
+        LeftDriveBack  = hardwareMap.get(DcMotor.class, "bl");
+        RightDriveBack = hardwareMap.get(DcMotor.class, "br");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -133,7 +133,7 @@ public class MecanumDriveCode extends LinearOpMode {
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Motors","Left Front Power: (%.2f), Right Front Power: (%.2f), Left Back Power: (%.2f), Right Back Power: (%.2f)", LeftDriveFront.getPower(), RightDriveFront.getPower(), LeftDriveBack.getPower(), RightDriveBack.getPower());
-            telemetry.addData("Written by", "Arul");
+            telemetry.addData("Written by", "deCoders Robotics Team");
             telemetry.update();
         }
     }
