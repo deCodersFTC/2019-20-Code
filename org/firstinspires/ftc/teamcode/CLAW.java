@@ -48,7 +48,7 @@ float PowerX;
         telemetry.addData(">", "Press Play to start tracking");
         telemetry.update();
         waitForStart();
-        grab  = hardwareMap.get(CRservo.class, "grab");
+        grab  = hardwareMap.get(CRServo.class, "grab");
 
         while (opModeIsActive()) {
           if(gamepad1.a){
