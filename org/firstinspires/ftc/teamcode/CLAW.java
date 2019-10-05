@@ -42,6 +42,8 @@ import java.util.List;
 
 public class CLAW extends LinearOpMode {
 private CRServo grab;
+private DcMotor lift;
+private DcMotor extend;
 float PowerX;
 
     @Override public void runOpMode() {
@@ -49,7 +51,8 @@ float PowerX;
         telemetry.update();
         waitForStart();
         grab  = hardwareMap.get(CRServo.class, "grab");
-
+        lift = hardwareMap.get()DcMotor.class, "lift");
+        extend = hardwareMap.get()DcMotor.class, "extend");
         while (opModeIsActive()) {
           if(gamepad1.a){
             PowerX = 1;
@@ -60,6 +63,8 @@ float PowerX;
           else{
             PowerX = 0;
           }
+          lift.setPower(left_stick_y);
+          extend.setPower(right_stick_y);
           grab.setPower(PowerX);
         }
     }
