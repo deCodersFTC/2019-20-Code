@@ -89,8 +89,6 @@ public class EasterEgg extends LinearOpMode {
         bl.setDirection(DcMotor.Direction.FORWARD);
         br.setDirection(DcMotor.Direction.REVERSE);
 
-        lift.setDirection(DcMotor.Direction.FORWARD);
-        extend.setDirection(DcMotor.Direction.FORWARD);
 
 
         // Wait for the game to start (driver presses PLAY)
@@ -126,11 +124,11 @@ public class EasterEgg extends LinearOpMode {
             // rightPower = -gamepad1.right_stick_y ;
 
             // Send calculated power to wheels
-            if(turn != 0 && (drive != 0 || slide != 0)){
+            if(T != 0 && (D != 0 || S != 0)){
                 fl.setPower(LFP/2);
                 bl.setPower(LBP/2);
                 fr.setPower(RFP/2);
-                rl.setPower(RBP/2);
+                br.setPower(RBP/2);
 
             }
             else{
