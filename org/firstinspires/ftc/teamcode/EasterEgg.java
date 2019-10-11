@@ -60,10 +60,6 @@ public class EasterEgg extends LinearOpMode {
     private DcMotor fr;
     private DcMotor bl;
     private DcMotor br;
-    //private DcMotor lift;
-    //private DcMotor extend;
-    //float PowerX;
-    //float PowerY;
 
 
     @Override
@@ -85,9 +81,9 @@ public class EasterEgg extends LinearOpMode {
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         fl.setDirection(DcMotor.Direction.FORWARD);
-        fr.setDirection(DcMotor.Direction.REVERSE);
+        fr.setDirection(DcMotor.Direction.FORWARD);
         bl.setDirection(DcMotor.Direction.FORWARD);
-        br.setDirection(DcMotor.Direction.REVERSE);
+        br.setDirection(DcMotor.Direction.FORWARD);
 
 
 
@@ -113,10 +109,10 @@ public class EasterEgg extends LinearOpMode {
 
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.
-            LFP = T + S + D;
+            LFP = T - S - D;
             RFP = T + S - D;
             LBP = T - S + D;
-            RBP = T - S - D;
+            RBP = T + S + D;
 
             // Tank Mode uses one stick to control each wheel.
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
