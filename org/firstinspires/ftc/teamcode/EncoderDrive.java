@@ -76,7 +76,7 @@ public class EncoderDrive extends LinearOpMode {
     //float PowerX;
     //float PowerY;
 
-    static final double COUNTS_PER_MOTOR_REV  = 560 ; // eg: REV HD HEX Motor Encoder
+    static final double COUNTS_PER_MOTOR_REV  = 560 ; // REV HD HEX Motor Encoder: Counts per rotation of the output shaft. More info can be found here: http://www.revrobotics.com/content/docs/Encoder-Guide.pdf
     static final double DRIVE_GEAR_REDUCTION  = 1.0;   // This is < 1.0 if geared UP
     static final double WHEEL_DIAMETER_INCHES = 4.0 ;  // For figuring circumference
     static final double COUNTS_PER_INCH       = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
