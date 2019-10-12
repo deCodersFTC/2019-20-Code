@@ -8,8 +8,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name="Easter Egg", group="Linear Opmode")
+@Disabled
 
-public class EasterEgg extends LinearOpMode {
+public class EasterEggIrrelevant extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor fl;
