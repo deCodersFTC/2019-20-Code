@@ -76,7 +76,7 @@ public class EncoderDrive extends LinearOpMode {
     //float PowerX;
     //float PowerY;
 
-    static final double COUNTS_PER_MOTOR_REV  = 1440 ; // eg: TETRIX Motor Encoder
+    static final double COUNTS_PER_MOTOR_REV  = 560 ; // eg: TETRIX Motor Encoder
     static final double DRIVE_GEAR_REDUCTION  = 1.0;   // This is < 1.0 if geared UP
     static final double WHEEL_DIAMETER_INCHES = 4.0 ;  // For figuring circumference
     static final double COUNTS_PER_INCH       = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
@@ -134,6 +134,8 @@ public class EncoderDrive extends LinearOpMode {
         bl  = hardwareMap.get(DcMotor.class, "bl");
         br = hardwareMap.get(DcMotor.class, "br");
 
+
+
         // lift  = hardwareMap.get(DcMotor.class, "ba");
         // extend = hardwareMap.get(DcMotor.class, "ta");
 
@@ -152,9 +154,9 @@ public class EncoderDrive extends LinearOpMode {
 
 
         fl.setDirection(DcMotor.Direction.FORWARD);
-        fr.setDirection(DcMotor.Direction.REVERSE);
+        fr.setDirection(DcMotor.Direction.FORWARD);
         bl.setDirection(DcMotor.Direction.FORWARD);
-        br.setDirection(DcMotor.Direction.REVERSE);
+        br.setDirection(DcMotor.Direction.FORWARD);
 
         fl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -182,6 +184,12 @@ public class EncoderDrive extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+          Forwards(5);
+          // Backwards(5);
+          // slideRight(5);
+          // slideLeft(5);
+          // TurnLeft(90);
+          // TurnRight(90);
             //
             // // Setup a variable for each drive wheel to save power level for telemetry
             // double LFP;
@@ -298,24 +306,25 @@ public class EncoderDrive extends LinearOpMode {
 
     }
     public void Backwards(double distance){
-        encoderDrive(DRIVE_SPEED,distance,distance,distance,distance, 5);
+      //                         lf         rf         lb         rb
+        encoderDrive(DRIVE_SPEED, -distance, -distance, distance, distance, 5);
     }
     public void Forwards(double distance){
-        encoderDrive(DRIVE_SPEED, -distance, -distance, -distance, -distance, 5);
+        encoderDrive(DRIVE_SPEED, distance, distance, -distance, -distance, 5);
     }
     public void TurnLeft(double a){
         double degrees = a * 24/90;
-        encoderDrive(TURN_SPEED, degrees, -degrees, degrees,- degrees,5);
+        encoderDrive(TURN_SPEED, -degrees, -degrees, -degrees,-degrees,5);
     }
     public void TurnRight(double a){
         double degrees = a * 24/90;
-        encoderDrive(TURN_SPEED, -degrees, degrees, -degrees, degrees, 5);
+        encoderDrive(TURN_SPEED, degrees, degrees, degrees, degrees, 5);
     }
     public void slideRight(double distance){
-        encoderDrive(SLIDE_SPEED,-distance,distance,distance,-distance,5);
+        encoderDrive(SLIDE_SPEED,-distance, distance, -distance, distance, 5);
     }
     public void slideLeft(double distance){
-        encoderDrive(SLIDE_SPEED,distance,-distance,-distance,distance,5);
+        encoderDrive(SLIDE_SPEED, distance, -distance, distance, -distance,5);
     }
 
 
