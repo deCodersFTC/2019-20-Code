@@ -29,10 +29,10 @@ import java.util.List;
 
 public class AutonomousMovementTester extends LinearOpMode {
 
-    public DcMotor  lf;
-    public DcMotor  rf;
-    public DcMotor  lb;
-    public DcMotor  rb;
+    public DcMotor  fl;
+    public DcMotor  fr;
+    public DcMotor  bl;
+    public DcMotor  br;
     public DcMotor lift;
     public DistanceSensor heightSensor;
 
@@ -57,28 +57,28 @@ public class AutonomousMovementTester extends LinearOpMode {
         if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
-            newLeftFrontTarget = lf.getCurrentPosition() + (int)(leftFrontInches * COUNTS_PER_INCH);
-            newRightFrontTarget = rf.getCurrentPosition() + (int)(rightFrontInches * COUNTS_PER_INCH);
-            newLeftBackTarget = lb.getCurrentPosition() + (int)(leftBackInches * COUNTS_PER_INCH);
-            newRightBackTarget = rb.getCurrentPosition() + (int)(rightBackInches * COUNTS_PER_INCH);
+            newLeftFrontTarget = fl.getCurrentPosition() + (int)(leftFrontInches * COUNTS_PER_INCH);
+            newRightFrontTarget = fr.getCurrentPosition() + (int)(rightFrontInches * COUNTS_PER_INCH);
+            newLeftBackTarget = bl.getCurrentPosition() + (int)(leftBackInches * COUNTS_PER_INCH);
+            newRightBackTarget = br.getCurrentPosition() + (int)(rightBackInches * COUNTS_PER_INCH);
 
-            lf.setTargetPosition(newLeftFrontTarget);
-            rf.setTargetPosition(newRightFrontTarget);
-            lb.setTargetPosition(newLeftBackTarget);
-            rb.setTargetPosition(newRightBackTarget);
+            fl.setTargetPosition(newLeftFrontTarget);
+            fr.setTargetPosition(newRightFrontTarget);
+            bl.setTargetPosition(newLeftBackTarget);
+            br.setTargetPosition(newRightBackTarget);
 
             // Turn On RUN_TO_POSITION
-            lf.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rf.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            lb.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            rb.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            fl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            fr.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            bl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            br.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
             runtime.reset();
-            lb.setPower(Math.abs(speed));
-            lf.setPower(Math.abs(speed));
-            rb.setPower(Math.abs(speed));
-            rf.setPower(Math.abs(speed));
+            bl.setPower(Math.abs(speed));
+            fl.setPower(Math.abs(speed));
+            br.setPower(Math.abs(speed));
+            fr.setPower(Math.abs(speed));
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
@@ -86,22 +86,22 @@ public class AutonomousMovementTester extends LinearOpMode {
             // always end the motion as soon as possible.
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            while (opModeIsActive() && (runtime.seconds() < timeoutS) && ( lb.isBusy() &&  rb.isBusy())) {
+            while (opModeIsActive() && (runtime.seconds() < timeoutS) && ( bl.isBusy() &&  br.isBusy())) {
 
 
             }
 
             // Stop all motion;
-            lb.setPower(0);
-            rb.setPower(0);
-            lf.setPower(0);
-            rf.setPower(0);
+            bl.setPower(0);
+            br.setPower(0);
+            fl.setPower(0);
+            fr.setPower(0);
             lift.setPower(0);
             //Set to RUN_USING_ENCODER
-            lf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            rf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            lb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            rb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         }
     }
@@ -128,31 +128,31 @@ public class AutonomousMovementTester extends LinearOpMode {
     }
 
     public void runOpMode(){
-        lf  = hardwareMap.get(DcMotor.class, "lf" );
-        rf = hardwareMap.get(DcMotor.class, "rf");
-        lb   = hardwareMap.get(DcMotor.class, "lb"  );
-        rb  = hardwareMap.get(DcMotor.class, "rb" );
+        fl  = hardwareMap.get(DcMotor.class, "fl" );
+        fr = hardwareMap.get(DcMotor.class, "fr");
+        bl   = hardwareMap.get(DcMotor.class, "bl"  );
+        br  = hardwareMap.get(DcMotor.class, "br" );
 
-        lf.setDirection(DcMotor.Direction.FORWARD);
-        rf.setDirection(DcMotor.Direction.REVERSE);
-        lb.setDirection(DcMotor.Direction.FORWARD);
-        rb.setDirection(DcMotor.Direction.REVERSE);
+        fl.setDirection(DcMotor.Direction.FORWARD);
+        fr.setDirection(DcMotor.Direction.REVERSE);
+        bl.setDirection(DcMotor.Direction.FORWARD);
+        br.setDirection(DcMotor.Direction.REVERSE);
 
-        lf.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rf.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        fl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
-        lf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rf.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        lb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rb.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        lf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rf.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fl.setZeroPowebrehavior(DcMotor.ZeroPowebrehavior.BRAKE);
+        fr.setZeroPowebrehavior(DcMotor.ZeroPowebrehavior.BRAKE);
+        bl.setZeroPowebrehavior(DcMotor.ZeroPowebrehavior.BRAKE);
+        br.setZeroPowebrehavior(DcMotor.ZeroPowebrehavior.BRAKE);
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -160,7 +160,7 @@ public class AutonomousMovementTester extends LinearOpMode {
         heightSensor = hardwareMap.get(DistanceSensor.class, "Height");
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lift.setZeroPowebrehavior(DcMotor.ZeroPowebrehavior.BRAKE);
         lift.setDirection(DcMotor.Direction.FORWARD);
         while (opModeIsActive()){
             Forwards(10);
