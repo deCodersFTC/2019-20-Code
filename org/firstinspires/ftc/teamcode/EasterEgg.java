@@ -16,6 +16,7 @@ public class EasterEgg extends LinearOpMode {
     private DcMotor fr;
     private DcMotor bl;
     private DcMotor br;
+    private double sensitivity = 1;
 
     @Override
     public void runOpMode() {
@@ -32,16 +33,20 @@ public class EasterEgg extends LinearOpMode {
         bl.setDirection(DcMotor.Direction.FORWARD);
         br.setDirection(DcMotor.Direction.FORWARD);
 
+        fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         waitForStart();
         runtime.reset();
 
         while (opModeIsActive()) {
 
-			double LFP;
+			      double LFP;
             double RFP;
             double RBP;
             double LBP;
-			double sensitivity;
 
             double D = gamepad1.left_stick_y;
             double S = gamepad1.left_stick_x;
@@ -52,11 +57,22 @@ public class EasterEgg extends LinearOpMode {
             LBP = T - S + D;
             RBP = T + S + D;
 
-			sensitivity = 1;
+
 			// This can be anywhere from 0.5 to 1.
 			// Anything lower than 0.5 is very slow, which defeats the purpose of the speedy drivetrain.
 			// Anything above 1 will break the code, please don't do this.
-
+      if(gamepad1.a){
+        if(sensitivity<1){
+          sensitivity = sensitivity + 0.1;
+          sleep(200);
+        }
+      }
+      else if(gamepad1.b){
+        if(sensitivity>0.6){
+          sensitivity = sensitivity - 0.1;
+          sleep(200);
+        }
+      }
 			LFP *= sensitivity;
 			LBP *= sensitivity;
 			RFP *= sensitivity;
@@ -80,7 +96,7 @@ public class EasterEgg extends LinearOpMode {
             }
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Motors","Left Front Power: (%.2f), Right Front Power: (%.2f), Left Back Power: (%.2f), Right Back Power: (%.2f)", fl.getPower(), fr.getPower(), bl.getPower(), br.getPower());
+            telemetry.addData("Motors","Left Front Power: (%.2f), Right Front Power: (%.2f), Left Back Power: (%.2f), Right Back Power: (%.2f), Sensitivity: (%.2f)", fl.getPower(), fr.getPower(), bl.getPower(), br.getPower(), sensitivity);
             telemetry.addData("Written by", "deCoders Robotics Team");
             telemetry.update();
         }

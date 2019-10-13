@@ -76,14 +76,14 @@ public class EncoderDrive extends LinearOpMode {
     //float PowerX;
     //float PowerY;
 
-    static final double COUNTS_PER_MOTOR_REV  = 560 ; // REV HD HEX Motor Encoder: Counts per rotation of the output shaft. More info can be found here: http://www.revrobotics.com/content/docs/Encoder-Guide.pdf
+    static final double COUNTS_PER_MOTOR_REV  = 560; // REV HD HEX Motor Encoder: Counts per rotation of the output shaft. More info can be found here: http://www.revrobotics.com/content/docs/Encoder-Guide.pdf
     static final double DRIVE_GEAR_REDUCTION  = 1.0;   // This is < 1.0 if geared UP
     static final double WHEEL_DIAMETER_INCHES = 4.0 ;  // For figuring circumference
     static final double COUNTS_PER_INCH       = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double COUNTS_PER_INCH_2       = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double DRIVE_SPEED           = 1.0;
-    static final double TURN_SPEED            = 1.0;
-    static final double SLIDE_SPEED           = 1.0;
+    // static final double COUNTS_PER_INCH_2       = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
+    static final double DRIVE_SPEED           = 0.6;
+    static final double TURN_SPEED            = 0.6;
+    static final double SLIDE_SPEED           = 0.6;
 
     Orientation angles;
     double origAngle;
@@ -184,14 +184,14 @@ public class EncoderDrive extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-          Forwards(5);
+          Backwards(1);
           // Backwards(5);
           // slideRight(5);
           // slideLeft(5);
           // TurnLeft(90);
           // TurnRight(90);
             //
-            // // Setup a variable for each drive wheel to save power level for telemetry
+            // // Setup a vf ariable for each drive wheel to save power level for telemetry
             // double LFP;
             // double RFP;
             // double RBP;
