@@ -14,11 +14,11 @@ import java.util.List;
 // @Disabled
 
 public class CLAW extends LinearOpMode {
-private CRServo grab;
-// private DcMotor lift;
-private DcMotor extend;
-double PowerX;
-double PowerY;
+    private CRServo grab;
+    // private DcMotor lift;
+    private DcMotor extend;
+    double PowerX;
+    double PowerY;
 
     @Override public void runOpMode() {
         telemetry.addData(">", "Press Play to start tracking");
@@ -28,10 +28,10 @@ double PowerY;
         extend = hardwareMap.get(DcMotor.class, "extend");
         while (opModeIsActive()) {
           //Claw code
-          if(gamepad1.x){
+          if(gamepad2.x){
             PowerX = 1;
           }
-          else if(gamepad1.b){
+          else if(gamepad2.b){
             PowerX = -1;
           }
           else{
@@ -39,10 +39,10 @@ double PowerY;
           }
 
           //Arm code (extend)
-          if(gamepad1.y){
+          if(gamepad2.y){
             PowerY = 0.5;
           }
-          else if(gamepad1.a){
+          else if(gamepad2.a){
             PowerY = -1;
           }
           else{
