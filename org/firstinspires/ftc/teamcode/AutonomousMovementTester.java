@@ -17,6 +17,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import java.lang.Math;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -33,16 +35,22 @@ public class AutonomousMovementTester extends LinearOpMode {
     public DcMotor  fr;
     public DcMotor  bl;
     public DcMotor  br;
-    public DcMotor lift;
     public DistanceSensor heightSensor;
 
-    static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
+    static final double     COUNTS_PER_MOTOR_REV    = 560 ;    // eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1.0;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.6;
     static final double     SLIDE_SPEED             = 0.6;
+
+    Orientation angles;
+    double origAngle;
+    Orientation turnAngles;
+    BNO055IMU imu;
+    double targetAngle;
+    double difference;
 
     ElapsedTime runtime = new ElapsedTime();
 
@@ -86,7 +94,7 @@ public class AutonomousMovementTester extends LinearOpMode {
             // always end the motion as soon as possible.
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            while (opModeIsActive() && (runtime.seconds() < timeoutS) && ( bl.isBusy() &&  br.isBusy())) {
+            while (opModeIsActive() && (runtime.seconds() < timeoutS) && ( bl.isBusy() &&  br.isBusy() && fl.isBusy() && fr.isBusy())) {
 
 
             }
@@ -96,7 +104,6 @@ public class AutonomousMovementTester extends LinearOpMode {
             br.setPower(0);
             fl.setPower(0);
             fr.setPower(0);
-            lift.setPower(0);
             //Set to RUN_USING_ENCODER
             fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -107,36 +114,60 @@ public class AutonomousMovementTester extends LinearOpMode {
     }
 
     public void Backwards(double distance){
-        encoderDrive(DRIVE_SPEED,-distance,-distance,distance,distance, 5);
+        encoderDrive(DRIVE_SPEED,-distance,-distance,distance,distance, 1);
     }
     public void Forwards(double distance){
-        encoderDrive(DRIVE_SPEED, distance, distance, -distance, -distance, 5);
+        encoderDrive(DRIVE_SPEED, distance, distance, -distance, -distance, 1);
     }
     public void TurnLeft(double a){
         double degrees = a * 24/90;
-        encoderDrive(TURN_SPEED, -degrees, -degrees, -degrees,-degrees,5);
+        encoderDrive(TURN_SPEED, -degrees, -degrees, -degrees,-degrees,1);
     }
     public void TurnRight(double a){
         double degrees = a * 24/90;
-        encoderDrive(TURN_SPEED, degrees, degrees, degrees, degrees, 5);
-    }
-    public void slideLeft(double distance){
-        encoderDrive(SLIDE_SPEED,-distance,distance,-distance,distance,5);
+        encoderDrive(TURN_SPEED, degrees, degrees, degrees, degrees, 1);
     }
     public void slideRight(double distance){
-        encoderDrive(SLIDE_SPEED,distance,-distance,distance,-distance,5);
+        encoderDrive(SLIDE_SPEED,-distance,distance,-distance,distance,1);
+    }
+    public void slideLeft(double distance){
+        encoderDrive(SLIDE_SPEED,distance,-distance,distance,-distance,1);
+    }
+    public void stopAllMotors(){
+      encoderDrive(0,0,0,0,0,0.5);
+    }
+    public void SAM(){
+      stopAllMotors();
     }
 
+    public void AccurateTurn(double degrees){
+        degrees *= -1;
+        turnAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        origAngle = turnAngles.firstAngle;
+        targetAngle = origAngle + degrees;
+        difference = degrees;
+        while (Math.abs(difference) > 1) {
+            TurnLeft(difference * 0.9);
+            turnAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            difference = targetAngle - turnAngles.firstAngle;
+            // telemetry.addData("Difference", difference);
+            // telemetry.addData("New angle", targetAngle);
+            // telemetry.addData("Angles.firstAngle", turnAngles.firstAngle);
+            // telemetry.update();
+
+        }
+  }
+
     public void runOpMode(){
-        fl  = hardwareMap.get(DcMotor.class, "fl" );
-        fr = hardwareMap.get(DcMotor.class, "fr");
-        bl   = hardwareMap.get(DcMotor.class, "bl"  );
+        fl  = hardwareMap.get(DcMotor.class, "fl");
+        fr  = hardwareMap.get(DcMotor.class, "fr");
+        bl  = hardwareMap.get(DcMotor.class, "bl");
         br  = hardwareMap.get(DcMotor.class, "br" );
 
         fl.setDirection(DcMotor.Direction.FORWARD);
-        fr.setDirection(DcMotor.Direction.REVERSE);
+        fr.setDirection(DcMotor.Direction.FORWARD);
         bl.setDirection(DcMotor.Direction.FORWARD);
-        br.setDirection(DcMotor.Direction.REVERSE);
+        br.setDirection(DcMotor.Direction.FORWARD);
 
         fl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -149,26 +180,28 @@ public class AutonomousMovementTester extends LinearOpMode {
         bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        fl.setZeroPowebrehavior(DcMotor.ZeroPowebrehavior.BRAKE);
-        fr.setZeroPowebrehavior(DcMotor.ZeroPowebrehavior.BRAKE);
-        bl.setZeroPowebrehavior(DcMotor.ZeroPowebrehavior.BRAKE);
-        br.setZeroPowebrehavior(DcMotor.ZeroPowebrehavior.BRAKE);
+        fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        lift  = hardwareMap.get(DcMotor.class, "lift");
-        heightSensor = hardwareMap.get(DistanceSensor.class, "Height");
-        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        lift.setZeroPowebrehavior(DcMotor.ZeroPowebrehavior.BRAKE);
-        lift.setDirection(DcMotor.Direction.FORWARD);
+        waitForStart();
+        runtime.reset();
         while (opModeIsActive()){
-            Forwards(10);
-            Backwards(10);
-            slideRight(10);
-            slideLeft(10);
-            TurnRight(360);
-            TurnLeft(360);
+            Forwards(0.95);
+            SAM();
+            Backwards(0.95);
+            SAM();
+            slideRight(0.95);
+            SAM();
+            slideLeft(0.95);
+            SAM();
+            AccurateTurn(360);
+            SAM();
+            AccurateTurn(-360);
+            SAM();
 
         }
     }
