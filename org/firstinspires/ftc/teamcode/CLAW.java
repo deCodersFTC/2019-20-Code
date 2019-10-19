@@ -21,11 +21,11 @@ public class CLAW extends LinearOpMode {
     double PowerY;
 
     @Override public void runOpMode() {
+        grab  = hardwareMap.get(CRServo.class, "grab");
+        extend = hardwareMap.get(DcMotor.class, "extend");
         telemetry.addData(">", "Press Play to start tracking");
         telemetry.update();
         waitForStart();
-        grab  = hardwareMap.get(CRServo.class, "grab");
-        extend = hardwareMap.get(DcMotor.class, "extend");
         while (opModeIsActive()) {
           //Claw code
           if(gamepad2.x){
@@ -43,7 +43,7 @@ public class CLAW extends LinearOpMode {
             PowerY = 0.5;
           }
           else if(gamepad2.a){
-            PowerY = -1;
+            PowerY = -0.5;
           }
           else{
             PowerY = 0;
