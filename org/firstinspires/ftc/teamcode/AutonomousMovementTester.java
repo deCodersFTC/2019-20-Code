@@ -114,11 +114,11 @@ public class AutonomousMovementTester extends LinearOpMode {
     }
 
     public void Backwards(double distance){
-        distance *= 0.95;
+        distance = (distance *= 0.95) / 2;
         encoderDrive(DRIVE_SPEED,-distance,-distance,distance,distance, 1);
     }
     public void Forwards(double distance){
-      distance *= 0.95;
+      distance = (distance *= 0.95) / 2;
         encoderDrive(DRIVE_SPEED, distance, distance, -distance, -distance, 1);
     }
     public void TurnLeft(double a){
@@ -130,11 +130,11 @@ public class AutonomousMovementTester extends LinearOpMode {
         encoderDrive(TURN_SPEED, degrees, degrees, degrees, degrees, 1);
     }
     public void slideRight(double distance){
-      distance *= 0.95;
+      distance = (distance *= 0.95) / 2;
         encoderDrive(SLIDE_SPEED,-distance,distance,-distance,distance,1);
     }
     public void slideLeft(double distance){
-      distance *= 0.95;
+      distance = (distance *= 0.95) / 2;
         encoderDrive(SLIDE_SPEED,distance,-distance,distance,-distance,1);
     }
     public void stopAllMotors(){
@@ -204,8 +204,9 @@ public class AutonomousMovementTester extends LinearOpMode {
             SAM();
             AccurateTurn(360);
             SAM();
-            AccurateTurn(-360);
+            AccurateTurn(360);
             SAM();
+            break;
 
         }
     }
