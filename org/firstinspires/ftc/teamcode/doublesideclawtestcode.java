@@ -28,7 +28,7 @@ double PowerY;
             PowerY = 0.5;
           }
           else if(gamepad1.a){
-            PowerY = -1;
+            PowerY = -0.5;
           }
           else{
             PowerY = 0;
