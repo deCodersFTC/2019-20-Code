@@ -73,10 +73,9 @@ import java.util.List;
  * "ARwyrbr/////AAABmfOPvaqdyUItuak5WGND/d95mKYbin0FHuTmGx8D7ZVA+I/RXfFH9Cnx09qKG9SgWa0pQrQxf/72VPuH4D0T3ZUqADFUQbI518dIPmND3a7T3hgiet1TD5NrBODd0Hb5yd+SQup5z7ogbsBtkI3CSviXAoTVqMiZOjxMYC340zT1rnhXLW1L3yeRhTinmhzezNIr/fSut7bJyuVzShQTZquDv8eAhcoQPJ1LIDLR+kkwoo2aCyvcUiEBSWG5vfuquhFtShp0Bc3dUhpeZlTiJiMuKThM56jmFrGrRR8BdkefwDtsmxPhAGmVomWH6AVIqN3s8y57S+Fv/291q/AFrhw3ML0eGpBgcj6n2htcRyxu"
  */
 
-
+@Disabled
 @Autonomous(name = "Depot Autonomous", group = "Linear OpMode")
 public class DepotAutonomous extends LinearOpMode {
-
     private static final int GOLD_LEFT = 1;
     private static final int GOLD_CENTER = 2;
     private static final int GOLD_RIGHT = 3;
