@@ -51,6 +51,8 @@ public class AutonomousMovementTester extends LinearOpMode {
     BNO055IMU imu;
     double targetAngle;
     double difference;
+    angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+    float angle_at_top = angles.firstAngle;
 
     ElapsedTime runtime = new ElapsedTime();
 
@@ -146,10 +148,10 @@ public class AutonomousMovementTester extends LinearOpMode {
 
     public void AccurateTurn(double degrees){
         degrees *= -1;
-        turnAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        origAngle = turnAngles.firstAngle;
-        targetAngle = origAngle + degrees;
-        difference = degrees;
+        Orientation turnAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double origAngle = turnAngles.firstAngle;
+        double targetAngle = origAngle + degrees;
+        double difference = degrees;
         while (Math.abs(difference) > 1) {
             TurnLeft(difference * 0.9);
             turnAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
@@ -160,7 +162,8 @@ public class AutonomousMovementTester extends LinearOpMode {
             // telemetry.update();
 
         }
-  }
+
+    }
 
     public void runOpMode(){
         fl  = hardwareMap.get(DcMotor.class, "fl");
