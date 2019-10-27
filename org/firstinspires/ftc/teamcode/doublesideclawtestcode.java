@@ -24,15 +24,17 @@ double PowerY;
         extend = hardwareMap.get(DcMotor.class, "extend");
         while (opModeIsActive()) {
           //Arm code (extend)
-          if(gamepad1.y){
-            PowerY = 0.5;
-          }
-          else if(gamepad1.a){
-            PowerY = -0.5;
-          }
-          else{
-            PowerY = 0;
-          }
+          // if(gamepad1.right_bumper){
+          //   PowerY = 1;
+          // }
+          // else if(gamepad1.left_bumper){
+          //   PowerY = -1;
+          // }
+          // else{
+          //   PowerY = 0;
+          // }
+
+          PowerY = gamepad1.right_trigger - gamepad1.left_trigger;
           extend.setPower(PowerY);
 
           // telemetry.addData("Status", "Run Time: " + runtime.toString());
