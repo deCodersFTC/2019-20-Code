@@ -6,10 +6,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.CRServo;
 
-@TeleOp(name="Easter Egg", group="Linear Opmode")
+@TeleOp(name="Integrate", group="Linear Opmode")
 
-public class EasterEgg extends LinearOpMode {
+public class Integrate extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor fl;
@@ -113,7 +114,7 @@ public class EasterEgg extends LinearOpMode {
             PowerY = gamepad1.right_trigger - gamepad1.left_trigger;
             extend.setPower(PowerY);
             grab.setPower(PowerX);
-            
+
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Motors","Left Front Power: (%.2f), Right Front Power: (%.2f), Left Back Power: (%.2f), Right Back Power: (%.2f), Sensitivity: (%.2f)", fl.getPower(), fr.getPower(), bl.getPower(), br.getPower(), sensitivity);
             telemetry.addData("Written by", "deCoders Robotics Team");
