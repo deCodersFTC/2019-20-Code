@@ -11,12 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import java.util.Locale;
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.lang.Math;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -27,10 +22,25 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import java.util.List;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+
 @Autonomous(name = "AutonomousMovementTester" ,group = "Testers")
 
 public class AutonomousMovementTester extends LinearOpMode {
+    private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
+    private static final String LABEL_FIRST_ELEMENT = "Stone";
+    private static final String LABEL_SECOND_ELEMENT = "Skystone";
 
+    private static final String VUFORIA_KEY = "AeAnL1T/////AAABmTZwSvxDH0lVnljgy5pBgO8UdOWEaAiKyXqKqbABovZRTXBALSqlE0OHSRjJfjhCNHaOesi3e47zVd9aP/HvRyXToIZJvvzHxcjiDn4oYfAonwBGJdtJ2tbMZr91LDtH+xg3m1jiyA+UqCx0X9y0aKuKm4elTo5W9gayS0gW1T7bi1ww30yNScGGQABuYzqth/aUB50JDBnjpJV1Um1RljzpYq9RYQzOe1e+UTdCbznQSwEhFxsQmEM40oi6jjyUIWN+Ud3zcYvJ9hM2vbDOab/a1QZBEF6X/T/NCkeCsjQFj7yhA+hLFRMakOikLOb9ZDkrau7g+AxJ7M94puQiJzkkv6VTYn/C64jhur7CxzfP";
+
+    private VuforiaLocalizer vuforia;
+
+    private TFObjectDetector tfod;
+    public int countbob = 0;
     public DcMotor  fl;
     public DcMotor  fr;
     public DcMotor  bl;
@@ -41,18 +51,15 @@ public class AutonomousMovementTester extends LinearOpMode {
     static final double     DRIVE_GEAR_REDUCTION    = 1.0;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.6;
-    static final double     TURN_SPEED              = 0.6;
-    static final double     SLIDE_SPEED             = 0.6;
+    static final double     DRIVE_SPEED             = 0.4;
+    static final double     TURN_SPEED              = 0.4;
+    static final double     SLIDE_SPEED             = 0.4;
 
-    Orientation angles;
     double origAngle;
     Orientation turnAngles;
     BNO055IMU imu;
     double targetAngle;
     double difference;
-    angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-    float angle_at_top = angles.firstAngle;
 
     ElapsedTime runtime = new ElapsedTime();
 
@@ -156,16 +163,25 @@ public class AutonomousMovementTester extends LinearOpMode {
             TurnLeft(difference * 0.9);
             turnAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             difference = targetAngle - turnAngles.firstAngle;
-            // telemetry.addData("Difference", difference);
-            // telemetry.addData("New angle", targetAngle);
-            // telemetry.addData("Angles.firstAngle", turnAngles.firstAngle);
-            // telemetry.update();
+            telemetry.addData("Difference", difference);
+            telemetry.addData("New angle", targetAngle);
+            telemetry.addData("Angles.firstAngle", turnAngles.firstAngle);
 
         }
 
     }
 
     public void runOpMode(){
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        imu.initialize(parameters);
+
         fl  = hardwareMap.get(DcMotor.class, "fl");
         fr  = hardwareMap.get(DcMotor.class, "fr");
         bl  = hardwareMap.get(DcMotor.class, "bl");
@@ -192,26 +208,83 @@ public class AutonomousMovementTester extends LinearOpMode {
         bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        initVuforia();
+
+        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
+            initTfod();
+        } else {
+            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
+        }
+
+        if (tfod != null) {
+            tfod.activate();
+        }
+
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         waitForStart();
         runtime.reset();
         while (opModeIsActive()){
-            Forwards(1);
-            SAM();
-            Backwards(1);
-            SAM();
-            slideRight(1);
-            SAM();
-            slideLeft(1);
-            SAM();
+            countbob++;
             AccurateTurn(360);
             SAM();
-            AccurateTurn(360);
-            SAM();
+            sleep(1000);
+
+
+
+            if (tfod != null) {
+                // getUpdatedRecognitions() will return null if no new information is available since
+                // the last time that call was made.
+                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                if (updatedRecognitions != null) {
+                  telemetry.addData("# Object Detected", updatedRecognitions.size());
+
+                  // step through the list of recognitions and display boundary info.
+                  int i = 0;
+                  for (Recognition recognition : updatedRecognitions) {
+                    telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                    telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                      recognition.getLeft(), recognition.getTop());
+                    telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                            recognition.getRight(), recognition.getBottom());
+                    telemetry.addData("Cycle Count: ", String.valueOf(countbob));
+                  }
+                  telemetry.update();
+                }
+            }
+
+            if (tfod != null) {
+                tfod.shutdown();
+            }
             break;
+        }
 
         }
-    }
-    // todo: write your code here
+
+        private void initVuforia() {
+            /*
+             * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+             */
+            VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+            parameters.vuforiaLicenseKey = VUFORIA_KEY;
+            parameters.cameraDirection = CameraDirection.BACK;
+
+            //  Instantiate the Vuforia engine
+            vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+            // Loading trackables is not necessary for the TensorFlow Object Detection engine.
+        }
+
+        /**
+         * Initialize the TensorFlow Object Detection engine.
+         */
+        private void initTfod() {
+            int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+            TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+            tfodParameters.minimumConfidence = 0.8;
+            tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+            tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
+        }
 }
