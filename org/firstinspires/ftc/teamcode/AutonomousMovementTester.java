@@ -40,16 +40,15 @@ public class AutonomousMovementTester extends LinearOpMode {
     private VuforiaLocalizer vuforia;
 
     private TFObjectDetector tfod;
-    public int countbob = 0;
     public DcMotor  fl;
     public DcMotor  fr;
     public DcMotor  bl;
     public DcMotor  br;
     public DistanceSensor heightSensor;
 
-    static final double     COUNTS_PER_MOTOR_REV    = 560 ;    // eg: TETRIX Motor Encoder
+    static final double     COUNTS_PER_MOTOR_REV    = 560;    // eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1.0;     // This is < 1.0 if geared UP
-    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
+    static final double     WHEEL_DIAMETER_INCHES   = 4.0;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double     DRIVE_SPEED             = 0.4;
     static final double     TURN_SPEED              = 0.4;
@@ -131,11 +130,11 @@ public class AutonomousMovementTester extends LinearOpMode {
         encoderDrive(DRIVE_SPEED, distance, distance, -distance, -distance, 1);
     }
     public void TurnLeft(double a){
-        double degrees = a * 24/90;
+        double degrees = a * 1/9;
         encoderDrive(TURN_SPEED, -degrees, -degrees, -degrees,-degrees,1);
     }
     public void TurnRight(double a){
-        double degrees = a * 24/90;
+        double degrees = a * 1/9;
         encoderDrive(TURN_SPEED, degrees, degrees, degrees, degrees, 1);
     }
     public void slideRight(double distance){
@@ -154,20 +153,22 @@ public class AutonomousMovementTester extends LinearOpMode {
     }
 
     public void AccurateTurn(double degrees){
-        degrees *= -1;
         Orientation turnAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double origAngle = turnAngles.firstAngle;
         double targetAngle = origAngle + degrees;
         double difference = degrees;
         while (Math.abs(difference) > 1) {
-            TurnLeft(difference * 0.9);
+            TurnRight(difference * 0.9);
             turnAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             difference = targetAngle - turnAngles.firstAngle;
             telemetry.addData("Difference", difference);
-            telemetry.addData("New angle", targetAngle);
-            telemetry.addData("Angles.firstAngle", turnAngles.firstAngle);
+            telemetry.addData("Target angle", targetAngle);
+            telemetry.addData("Current angle", turnAngles.firstAngle);
+            telemetry.update();
+            sleep(5000);
 
         }
+
 
     }
 
@@ -225,7 +226,6 @@ public class AutonomousMovementTester extends LinearOpMode {
         waitForStart();
         runtime.reset();
         while (opModeIsActive()){
-            countbob++;
             AccurateTurn(360);
             SAM();
             sleep(1000);
@@ -247,7 +247,6 @@ public class AutonomousMovementTester extends LinearOpMode {
                                       recognition.getLeft(), recognition.getTop());
                     telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
                             recognition.getRight(), recognition.getBottom());
-                    telemetry.addData("Cycle Count: ", String.valueOf(countbob));
                   }
                   telemetry.update();
                 }
