@@ -101,17 +101,17 @@ public class Integrate extends LinearOpMode {
                 fr.setPower(RFP);
                 br.setPower(RBP);
             }
-            if(gamepad1.a){
+            if(gamepad2.a){
               PowerX = 1;
             }
-            else if(gamepad1.y){
+            else if(gamepad2.y){
               PowerX = -1;
             }
             else{
               PowerX = 0;
             }
 
-            PowerY = gamepad1.right_trigger - gamepad1.left_trigger;
+            PowerY = gamepad2.right_trigger - gamepad2.left_trigger;
             extend.setPower(PowerY);
             grab.setPower(PowerX);
 
