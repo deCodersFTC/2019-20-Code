@@ -102,10 +102,10 @@ public class Integrate extends LinearOpMode {
                 br.setPower(RBP);
             }
             if(gamepad2.a){
-              PowerX = 1;
+              PowerX = 0.5;
             }
             else if(gamepad2.y){
-              PowerX = -1;
+              PowerX = -0.5;
             }
             else{
               PowerX = 0;

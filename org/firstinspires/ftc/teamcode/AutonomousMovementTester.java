@@ -160,7 +160,7 @@ public class AutonomousMovementTester extends LinearOpMode {
             TurnRight(difference * 0.9);
             turnAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             difference = targetAngle - turnAngles.firstAngle;
-            telemetry.addData("Difference", x);
+            telemetry.addData("Difference", difference);
             telemetry.addData("Target angle", targetAngle);
             telemetry.addData("Current angle", turnAngles.firstAngle);
             telemetry.update();
