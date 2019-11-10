@@ -230,6 +230,17 @@ public class AutonomousMovementTester extends LinearOpMode {
             SAM();
             sleep(1000);
 
+            /* Tasks that need to be programed:
+             * 1. Pull Foundation into building site
+             * 2. Bring as many stones from loading zone into building zone
+             * 3. Bring skystone from loading to building zone (look at game manual for method of randomizing skystones)
+             * 4. Put as many stones in foundation as possible
+             * 5. Park on dividing line between Building and Loading zones
+             *
+             * Look at the map for point break down at: http://decodersftc.com/gamemap.png
+             * Consider not using encoders as only source of data but also using sensors on the robot such as distance sensors, etc.
+             */
+
 
 
             if (tfod != null) {
