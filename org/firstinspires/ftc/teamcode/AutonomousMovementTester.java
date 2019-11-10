@@ -46,14 +46,14 @@ public class AutonomousMovementTester extends LinearOpMode {
     public DcMotor  br;
     public DistanceSensor heightSensor;
 
-    static final double     COUNTS_PER_MOTOR_REV    = 560;    // eg: TETRIX Motor Encoder
+    static final double     COUNTS_PER_MOTOR_REV    = 2240;    // eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1/40;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 4.0;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double     DRIVE_SPEED             = 0.1;
     static final double     TURN_SPEED              = 0.1;
     static final double     SLIDE_SPEED             = 0.4;
-
+    static final double     DRIVE_BASE_DIAMETER     = 18.2;
     double origAngle;
     Orientation turnAngles;
     BNO055IMU imu;
@@ -128,13 +128,13 @@ public class AutonomousMovementTester extends LinearOpMode {
       distance = (distance * 0.95) / 2;
         encoderDrive(DRIVE_SPEED, distance, distance, -distance, -distance, 1);
     }
-    public void TurnLeft(double a){
-        double degrees = a * 1/9;
+    public void TurnLeft(double degrees){
+        degrees*=(DRIVE_BASE_DIAMETER * 3.14)/360;
         encoderDrive(TURN_SPEED, -degrees, -degrees, -degrees,-degrees,1);
     }
-    public void TurnRight(double a){
-        double degrees = a * 1/9;
-        encoderDrive(TURN_SPEED, degrees, degrees, degrees, degrees, 1);
+    public void TurnRight(double degrees){
+        degrees*=(DRIVE_BASE_DIAMETER * 3.14)/360;
+      encoderDrive(TURN_SPEED, degrees, degrees, degrees, degrees, 1);
     }
     public void slideRight(double distance){
       distance = (distance * 0.95) / 2;
@@ -160,7 +160,7 @@ public class AutonomousMovementTester extends LinearOpMode {
             TurnRight(difference * 0.9);
             turnAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             difference = targetAngle - turnAngles.firstAngle;
-            telemetry.addData("Difference", difference);
+            telemetry.addData("Difference", x);
             telemetry.addData("Target angle", targetAngle);
             telemetry.addData("Current angle", turnAngles.firstAngle);
             telemetry.update();
