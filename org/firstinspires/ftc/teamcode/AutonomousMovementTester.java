@@ -44,13 +44,14 @@ public class AutonomousMovementTester extends LinearOpMode {
     public DcMotor  fr;
     public DcMotor  bl;
     public DcMotor  br;
+    public DistanceSensor heightSensor;
 
     static final double     COUNTS_PER_MOTOR_REV    = 560;    // eg: TETRIX Motor Encoder
-    static final double     DRIVE_GEAR_REDUCTION    = 1.0;     // This is < 1.0 if geared UP
+    static final double     DRIVE_GEAR_REDUCTION    = 1/40;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 4.0;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.4;
-    static final double     TURN_SPEED              = 0.4;
+    static final double     DRIVE_SPEED             = 0.1;
+    static final double     TURN_SPEED              = 0.1;
     static final double     SLIDE_SPEED             = 0.4;
 
     double origAngle;
@@ -90,11 +91,10 @@ public class AutonomousMovementTester extends LinearOpMode {
 
             // reset the timeout time and start motion.
             runtime.reset();
-            bl.setPower(Math.abs(speed));
-            fl.setPower(Math.abs(speed));
-            br.setPower(Math.abs(speed));
+            //bl.setPower(Math.abs(speed));
+            //fl.setPower(Math.abs(speed));
+            //br.setPower(Math.abs(speed));
             fr.setPower(Math.abs(speed));
-
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
             // its target position, the motion will stop.  This is "safer" in the event that the robot will
@@ -121,11 +121,11 @@ public class AutonomousMovementTester extends LinearOpMode {
     }
 
     public void Backwards(double distance){
-        distance = (distance *= 0.95) / 2;
+        distance = (distance * 0.95) / 2;
         encoderDrive(DRIVE_SPEED,-distance,-distance,distance,distance, 1);
     }
     public void Forwards(double distance){
-      distance = (distance *= 0.95) / 2;
+      distance = (distance * 0.95) / 2;
         encoderDrive(DRIVE_SPEED, distance, distance, -distance, -distance, 1);
     }
     public void TurnLeft(double a){
@@ -137,11 +137,11 @@ public class AutonomousMovementTester extends LinearOpMode {
         encoderDrive(TURN_SPEED, degrees, degrees, degrees, degrees, 1);
     }
     public void slideRight(double distance){
-      distance = (distance *= 0.95) / 2;
+      distance = (distance * 0.95) / 2;
         encoderDrive(SLIDE_SPEED,-distance,distance,-distance,distance,1);
     }
     public void slideLeft(double distance){
-      distance = (distance *= 0.95) / 2;
+      distance = (distance * 0.95) / 2;
         encoderDrive(SLIDE_SPEED,distance,-distance,distance,-distance,1);
     }
     public void stopAllMotors(){
@@ -225,24 +225,13 @@ public class AutonomousMovementTester extends LinearOpMode {
         waitForStart();
         runtime.reset();
         while (opModeIsActive()){
-            AccurateTurn(360);
+            //AccurateTurn(360);
+            encoderDrive(TURN_SPEED, 12.5, 12.5, 12.5, 12.5, 1);
             SAM();
             sleep(1000);
 
-            /* Tasks that need to be programed:
-             * 1. Pull Foundation into building site
-             * 2. Bring as many stones from loading zone into building zone
-             * 3. Bring skystone from loading to building zone (look at game manual for method of randomizing skystones)
-             * 4. Put as many stones in foundation as possible
-             * 5. Park on dividing line between Building and Loading zones
-             *
-             * Look at the map for point break down at: http://decodersftc.com/gamemap.png
-             * Consider not using encoders as only source of data but also using sensors on the robot such as distance sensors, etc.
-             */
 
 
-
-            //Vuforia code bellow
             if (tfod != null) {
                 // getUpdatedRecognitions() will return null if no new information is available since
                 // the last time that call was made.
