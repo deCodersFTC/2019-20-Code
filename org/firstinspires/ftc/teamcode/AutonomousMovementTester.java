@@ -226,7 +226,7 @@ public class AutonomousMovementTester extends LinearOpMode {
         runtime.reset();
         while (opModeIsActive()){
             //AccurateTurn(360);
-            encoderDrive(TURN_SPEED, 12.5, 12.5, 12.5, 12.5, 1);
+            AccurateTurn(90);
             SAM();
             sleep(1000);
 
