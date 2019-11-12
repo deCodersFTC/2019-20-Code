@@ -8,12 +8,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.CRServo;
 
-@TeleOp(name="Integrate", group="Linear Opmode")
+@TeleOp(name="Integrated Tele-Op", group="Linear Opmode")
 
 public class Integrate extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor fl;
+    private DcMotor foundation;
     private DcMotor fr;
     private DcMotor bl;
     private DcMotor br;
@@ -21,6 +22,7 @@ public class Integrate extends LinearOpMode {
     private CRServo grab;
     double PowerX;
     double PowerY;
+    double PowerZ;
     private double sensitivity = 1;
 
     @Override
@@ -30,6 +32,7 @@ public class Integrate extends LinearOpMode {
 
         extend = hardwareMap.get(DcMotor.class, "extend");
         grab = hardwareMap.get(CRServo.class, "grab");
+        foundation = hardwareMap.get(DcMotor.class, "foundation");
         fl  = hardwareMap.get(DcMotor.class, "fl");
         fr = hardwareMap.get(DcMotor.class, "fr");
         bl  = hardwareMap.get(DcMotor.class, "bl");
@@ -112,6 +115,16 @@ public class Integrate extends LinearOpMode {
             }
 
             PowerY = gamepad2.right_trigger - gamepad2.left_trigger;
+            if(gamepad2.x){
+              PowerZ = -1;
+            }
+            else if(gamepad2.b){
+              PowerZ = 1;
+            }
+            else{
+              PowerZ = 1;
+            }
+            foundation.setPower(PowerZ);
             extend.setPower(PowerY);
             grab.setPower(PowerX);
 
