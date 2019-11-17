@@ -78,7 +78,7 @@ public class Integrate extends LinearOpMode {
         }
       }
       else if(gamepad1.b){
-        if(sensitivity>0.6){
+        if(sensitivity>0.4){
           sensitivity = sensitivity - 0.1;
           sleep(200);
         }
