@@ -40,10 +40,13 @@ public class AutonomousMovementTester extends LinearOpMode {
     private VuforiaLocalizer vuforia;
 
     private TFObjectDetector tfod;
-    public DcMotor  fl;
-    public DcMotor  fr;
-    public DcMotor  bl;
-    public DcMotor  br;
+    private DcMotor fl;
+    private DcMotor fr;
+    private DcMotor bl;
+    private DcMotor br;
+    private DcMotor foundation;
+    private DcMotor extend;
+    private CRServo grab;
     public DistanceSensor heightSensor;
 
     static final double     COUNTS_PER_MOTOR_REV    = 1120;    // eg: TETRIX Motor Encoder
@@ -182,10 +185,13 @@ public class AutonomousMovementTester extends LinearOpMode {
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu.initialize(parameters);
 
+        extend = hardwareMap.get(DcMotor.class, "extend");
+        grab = hardwareMap.get(CRServo.class, "grab");
+        foundation = hardwareMap.get(DcMotor.class, "foundation");
         fl  = hardwareMap.get(DcMotor.class, "fl");
-        fr  = hardwareMap.get(DcMotor.class, "fr");
+        fr = hardwareMap.get(DcMotor.class, "fr");
         bl  = hardwareMap.get(DcMotor.class, "bl");
-        br  = hardwareMap.get(DcMotor.class, "br" );
+        br = hardwareMap.get(DcMotor.class, "br");
 
         fl.setDirection(DcMotor.Direction.FORWARD);
         fr.setDirection(DcMotor.Direction.FORWARD);
@@ -237,13 +243,17 @@ public class AutonomousMovementTester extends LinearOpMode {
             Forwards(2);
             slideLeft(2);
             Forwards(2);
-            // Claw down here
+            foundation.setPower(0.7);
+            sleep(1000);
             Backwards(3);
+            foundation.setPower(-0.1);
+            sleep(3000);
             slideRight(6);
             Forwards(3);
             //Scanning goes here
             if (skystone==true){
-              // pickup skystone
+              extend.setPower(1);
+              // open claw
             } else{
               slideRight(2/3);
             }
