@@ -233,6 +233,21 @@ public class AutonomousMovementTester extends LinearOpMode {
             SAM();
             //sleep(8000);
 
+            // The code below is for the case the robot starts in top left side of the field. It is for when basic autonomous works. This is the movement of the bot during the autonomous that should be happening.
+            Forwards(2);
+            slideLeft(2);
+            Forwards(2);
+            // Claw down here
+            Backwards(3);
+            slideRight(6);
+            Forwards(3);
+            //Scanning goes here
+            if (skystone==true){
+              // pickup skystone
+            } else{
+              slideRight(2/3);
+            }
+
             /* Tasks that need to be programed:
              * 1. Pull Foundation into building site
              * 2. Bring as many stones from loading zone into building zone
