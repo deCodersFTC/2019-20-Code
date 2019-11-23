@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="test", group="Pushbot")
+@Autonomous(name="Auto Test", group="Pushbot")
 public class test extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -58,8 +58,8 @@ public class test extends LinearOpMode {
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        encoderDrive(DRIVE_SPEED,  48, 48, -48, -48, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
-        encoderDrive(TURN_SPEED,   12, 12, 12, 12, 4.0); // S3: Turn 12 Inches with 4 Sec timeout
+        encoderDrive(DRIVE_SPEED,  10, 10, 10, 10, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
+        //encoderDrive(TURN_SPEED,   12, 12, 12, 12, 4.0); // S3: Turn 12 Inches with 4 Sec timeout
 
         sleep(1000);     // pause for servos to move
 
@@ -108,6 +108,13 @@ public class test extends LinearOpMode {
             fl.setPower(Math.abs(speed));
             bl.setPower(Math.abs(speed));
             br.setPower(Math.abs(speed));
+
+            telemetry.addData("fl: ", String.valueOf(fl.isBusy()));
+            telemetry.addData("fr: ", String.valueOf(fr.isBusy()));
+            telemetry.addData("bl: ", String.valueOf(bl.isBusy()));
+            telemetry.addData("br: ", String.valueOf(br.isBusy()));
+            telemetry.update();
+            sleep(2000);
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
