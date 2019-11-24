@@ -62,10 +62,15 @@ public class Integrate extends LinearOpMode {
             double S = gamepad1.left_stick_x;
             double T = gamepad1.right_stick_x;
 
-            LFP = -(T - S - D);
-            RFP = -(T + S - D);
-            LBP = -(T - S + D);
-            RBP = -(T + S + D);
+            // LFP = T - S - D;
+            // RFP = T + S - D;
+            // LBP = T - S + D;
+            // RBP = T + S + D;
+
+            LFP = D - S - T;
+            RFP = -D - S - T;
+            LBP = D + S - T;
+            RBP = -D + S - T;
 
 
 			// This can be anywhere from 0.5 to 1.

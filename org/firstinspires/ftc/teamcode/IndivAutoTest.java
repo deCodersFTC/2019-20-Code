@@ -24,6 +24,7 @@ public class IndivAutoTest extends LinearOpMode {
     private DcMotor fr;
     private DcMotor fl;
     private DcMotor bl;
+    private DcMotor fmove;
 
     static final double     COUNTS_PER_MOTOR_REV    = 1120;    // eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1 ;     // This is < 1.0 if geared UP
@@ -61,6 +62,7 @@ public class IndivAutoTest extends LinearOpMode {
          fr  = hardwareMap.get(DcMotor.class, "fr");
          bl  = hardwareMap.get(DcMotor.class, "bl");
          fl  = hardwareMap.get(DcMotor.class, "fl" );
+         fmove  = hardwareMap.get(DcMotor.class, "foundation" );
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Resetting Encoders");    //
@@ -70,20 +72,22 @@ public class IndivAutoTest extends LinearOpMode {
         fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         fl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        fmove.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fmove.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Send telemetry message to indicate successful Encoder reset
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        slideRight(30);
-        AccurateTurn(180);
-        slideRight(30);
+        slideLeft(29);
+        encoderFoundation(DRIVE_SPEED, 12, 5.0);
+        slideRight(29);
 
 
         telemetry.addData("Path", "Complete");
@@ -139,6 +143,28 @@ public class IndivAutoTest extends LinearOpMode {
             sleep(5000);
         }
       }
+
+    public void encoderFoundation(double speed, double fmove, double timeoutS){
+        double newfmovetarget;
+        if (opModeIsActive()){
+          newfmovetarget = fmove.getCurrentPosition() + (fmove * COUNTS_PER_INCH);
+          fmove.setTargetPosition(newfmovetarget);
+          fmove.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+          runtime.reset();
+          fmove.setPower(Math.abs(speed));
+          while (opModeIsActive() &&
+                 (runtime.seconds() < timeoutS) &&
+                 (fmove.isBusy())) {
+
+              // Display it for the driver.
+              telemetry.addData("Path: ", "Running");
+              telemetry.addData("fmove: ", String.valueOf(fmove.isBusy()));
+              telemetry.update();
+          }
+          fmove.setPower(0);
+          fmove.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+    }
 
     public void encoderDrive(double speed,
                              double flInches, double frInches,double blInches, double brInches,
