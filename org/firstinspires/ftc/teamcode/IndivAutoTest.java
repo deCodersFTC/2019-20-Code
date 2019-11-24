@@ -6,6 +6,14 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
 @Autonomous(name="Indiv Auto Test", group="Pushbot")
 public class IndivAutoTest extends LinearOpMode {
 
@@ -25,6 +33,12 @@ public class IndivAutoTest extends LinearOpMode {
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
 
+    double origAngle;
+    Orientation turnAngles;
+    BNO055IMU imu;
+    double targetAngle;
+    double difference;
+
     @Override
     public void runOpMode() {
 
@@ -32,6 +46,17 @@ public class IndivAutoTest extends LinearOpMode {
          * Initialize the drive system variables.
          * The init() method of the hardware class does all the work here
          */
+
+         imu = hardwareMap.get(BNO055IMU.class, "imu");
+         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+         parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+         parameters.loggingEnabled = true;
+         parameters.loggingTag = "IMU";
+         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+         imu.initialize(parameters);
+
          br  = hardwareMap.get(DcMotor.class, "br");
          fr  = hardwareMap.get(DcMotor.class, "fr");
          bl  = hardwareMap.get(DcMotor.class, "bl");
@@ -56,15 +81,9 @@ public class IndivAutoTest extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        // Step through each leg of the path,
-        // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        //goForward(30);
-        //goBackward(30);
         slideRight(30);
-        slideLeft(30);
-          // S1: Forward 47 Inches with 5 Sec timeout
-        //encoderDrive(TURN_SPEED,   12, 12, 12, 12, 4.0); // S3: Turn 12 Inches with 4 Sec timeout
-
+        AccurateTurn(180);
+        slideRight(30);
 
 
         telemetry.addData("Path", "Complete");
@@ -95,6 +114,31 @@ public class IndivAutoTest extends LinearOpMode {
       double dis = inches / 1.325;
       encoderDrive(DRIVE_SPEED, dis, dis, -dis, -dis, 5.0);
     }
+    public void turnLeft(double inches){
+      double dis = inches / 1.325;
+      encoderDrive(TURN_SPEED, dis, dis, dis, dis, 5.0);
+    }
+    public void turnRight(double inches){
+      double dis = inches / 1.325;
+      encoderDrive(TURN_SPEED, -dis, -dis, -dis, -dis, 5.0);
+    }
+
+    public void AccurateTurn(double degrees){
+        Orientation turnAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double origAngle = turnAngles.firstAngle;
+        double targetAngle = origAngle + degrees;
+        double difference = degrees;
+        while (Math.abs(difference) > 1) {
+            turnRight(difference * 0.9);
+            turnAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            difference = targetAngle - turnAngles.firstAngle;
+            telemetry.addData("Difference", difference);
+            telemetry.addData("Target angle", targetAngle);
+            telemetry.addData("Current angle", turnAngles.firstAngle);
+            telemetry.update();
+            sleep(5000);
+        }
+      }
 
     public void encoderDrive(double speed,
                              double flInches, double frInches,double blInches, double brInches,
@@ -181,4 +225,5 @@ public class IndivAutoTest extends LinearOpMode {
             //     // optional pause after each move
         }
     }
+
 }
