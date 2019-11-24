@@ -79,19 +79,19 @@ public class IndivAutoTest extends LinearOpMode {
      *  2) Move runs out of time
      *  3) Driver stops the opmode running.
      */
-    public void goForward(double inches){
+    public void forward(double inches){
       double dis = inches / 1.325;
       encoderDrive(DRIVE_SPEED, -dis, dis, -dis, dis, 5.0);
     }
-    public void goBackward(double inches){
+    public void backward(double inches){
       double dis = inches / 1.325;
       encoderDrive(DRIVE_SPEED, dis, -dis, dis, -dis, 5.0);
     }
-    public void goRight(double inches){
+    public void slideRight(double inches){
       double dis = inches / 1.325;
       encoderDrive(DRIVE_SPEED, -dis, -dis, dis, dis, 5.0);
     }
-    public void goLeft(double inches){
+    public void slideLeft(double inches){
       double dis = inches / 1.325;
       encoderDrive(DRIVE_SPEED, dis, dis, -dis, -dis, 5.0);
     }

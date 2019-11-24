@@ -116,10 +116,10 @@ public class Integrate extends LinearOpMode {
 
             PowerY = gamepad2.right_trigger - gamepad2.left_trigger;
             if(gamepad2.x){
-              PowerZ = -1;
+              PowerZ = -0.5;
             }
             else if(gamepad2.b){
-              PowerZ = 1;
+              PowerZ = 0.5;
             }
             else{
               PowerZ = 0;
