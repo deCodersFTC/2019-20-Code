@@ -60,8 +60,8 @@ public class IndivAutoTest extends LinearOpMode {
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
         //goForward(30);
         //goBackward(30);
-        goRight(30);
-        goLeft(30);
+        slideRight(30);
+        slideLeft(30);
           // S1: Forward 47 Inches with 5 Sec timeout
         //encoderDrive(TURN_SPEED,   12, 12, 12, 12, 4.0); // S3: Turn 12 Inches with 4 Sec timeout
 
