@@ -58,7 +58,10 @@ public class IndivAutoTest extends LinearOpMode {
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        Forward(24/1.414);
+        //goForward(30);
+        //goBackward(30);
+        goRight(30);
+        goLeft(30);
           // S1: Forward 47 Inches with 5 Sec timeout
         //encoderDrive(TURN_SPEED,   12, 12, 12, 12, 4.0); // S3: Turn 12 Inches with 4 Sec timeout
 
@@ -76,12 +79,23 @@ public class IndivAutoTest extends LinearOpMode {
      *  2) Move runs out of time
      *  3) Driver stops the opmode running.
      */
-    public void Forward(double inches){
-      encoderDrive(DRIVE_SPEED, -inches, inches, -inches, inches, 5.0);
+    public void goForward(double inches){
+      double dis = inches / 1.325;
+      encoderDrive(DRIVE_SPEED, -dis, dis, -dis, dis, 5.0);
     }
-    public void Backward(double inches){
-      encoderDrive(DRIVE_SPEED, inches, -inches, inches, -inches, 5.0);
+    public void goBackward(double inches){
+      double dis = inches / 1.325;
+      encoderDrive(DRIVE_SPEED, dis, -dis, dis, -dis, 5.0);
     }
+    public void goRight(double inches){
+      double dis = inches / 1.325;
+      encoderDrive(DRIVE_SPEED, -dis, -dis, dis, dis, 5.0);
+    }
+    public void goLeft(double inches){
+      double dis = inches / 1.325;
+      encoderDrive(DRIVE_SPEED, dis, dis, -dis, -dis, 5.0);
+    }
+
     public void encoderDrive(double speed,
                              double flInches, double frInches,double blInches, double brInches,
                              double timeoutS) {
@@ -154,11 +168,11 @@ public class IndivAutoTest extends LinearOpMode {
 
 
             telemetry.addData("FinalPos: ", String.valueOf((br.getCurrentPosition())/COUNTS_PER_INCH));
-            sleep(2000);
+            //sleep(2000);
 
             //telemetry.addData("DistanceTraveled: ", String.valueOf(br.getCurrentPosition()-x));
             telemetry.update();
-            sleep(2000);
+            //sleep(2000);
             br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
