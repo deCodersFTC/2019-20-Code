@@ -17,7 +17,7 @@ public class IndivAutoTest extends LinearOpMode {
     // private DcMotor br;
     // private DcMotor bl;
 
-    static final double     COUNTS_PER_MOTOR_REV    = 10;    // eg: TETRIX Motor Encoder
+    static final double     COUNTS_PER_MOTOR_REV    = 560;    // eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1 ;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
@@ -58,7 +58,7 @@ public class IndivAutoTest extends LinearOpMode {
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        encoderDrive(DRIVE_SPEED,  48, -48, 48, -48, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
+        encoderDrive(DRIVE_SPEED,  100, -48, 48, -48, 10);  // S1: Forward 47 Inches with 5 Sec timeout
         //encoderDrive(TURN_SPEED,   12, 12, 12, 12, 4.0); // S3: Turn 12 Inches with 4 Sec timeout
 
 
@@ -92,6 +92,12 @@ public class IndivAutoTest extends LinearOpMode {
             // newbrtarget = br.getCurrentPosition() + (int)(brInches * COUNTS_PER_INCH);
             // newbltarget = bl.getCurrentPosition() + (int)(blInches * COUNTS_PER_INCH);
             fr.setTargetPosition(newfrtarget);
+
+            telemetry.addData("CurrentPos: ", String.valueOf(fr.getCurrentPosition()));
+
+            telemetry.addData("TargetPos: ", String.valueOf(newfrtarget));
+            telemetry.update();
+            sleep(5000);
             // fl.setTargetPosition(newfltarget);
             // br.setTargetPosition(newbrtarget);
             // bl.setTargetPosition(newbltarget);
@@ -109,11 +115,9 @@ public class IndivAutoTest extends LinearOpMode {
             // bl.setPower(Math.abs(speed));
             // br.setPower(Math.abs(speed));
 
-            telemetry.addData("fr: ", String.valueOf(fr.isBusy()));
             // telemetry.addData("fl: ", String.valueOf(fl.isBusy()));
             // telemetry.addData("bl: ", String.valueOf(bl.isBusy()));
             // telemetry.addData("br: ", String.valueOf(br.isBusy()));
-            telemetry.update();
             //sleep(2000);
 
             // keep looping while we are still active, and there is time left, and both motors are running.
@@ -124,10 +128,12 @@ public class IndivAutoTest extends LinearOpMode {
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
                    (runtime.seconds() < timeoutS) &&
-                   (fr.isBusy()/* && fl.isBusy() && br.isBusy() && bl.isBusy())*/) {
+                   (fr.isBusy()/* && fl.isBusy() && br.isBusy() && bl.isBusy())*/)) {
 
                 // Display it for the driver.
                 telemetry.addData("Path: ", "Running");
+                telemetry.addData("fr: ", String.valueOf(fr.isBusy()));
+                telemetry.update();
             }
 
             // Stop all motion;
@@ -137,6 +143,13 @@ public class IndivAutoTest extends LinearOpMode {
             // bl.setPower(0);
 
             // Turn off RUN_TO_POSITION
+            sleep(5000);
+            telemetry.addData("FinalPos: ", String.valueOf((fr.getCurrentPosition())/COUNTS_PER_INCH));
+
+
+            //telemetry.addData("DistanceTraveled: ", String.valueOf(fr.getCurrentPosition()-x));
+            telemetry.update();
+            sleep(5000);
             fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             // fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             // br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
