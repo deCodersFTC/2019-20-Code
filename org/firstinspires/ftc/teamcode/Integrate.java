@@ -122,7 +122,7 @@ public class Integrate extends LinearOpMode {
               PowerZ = 1;
             }
             else{
-              PowerZ = 1;
+              PowerZ = 0;
             }
             foundation.setPower(PowerZ);
             extend.setPower(PowerY);
