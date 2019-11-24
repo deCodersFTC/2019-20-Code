@@ -12,10 +12,10 @@ public class IndivAutoTest extends LinearOpMode {
     /* Declare OpMode members. */
     private ElapsedTime     runtime = new ElapsedTime();
 
+    private DcMotor br;
+    private DcMotor fr;
     private DcMotor fl;
-    // private DcMotor fr;
-    // private DcMotor br;
-    // private DcMotor bl;
+    private DcMotor bl;
 
     static final double     COUNTS_PER_MOTOR_REV    = 1120;    // eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1 ;     // This is < 1.0 if geared UP
@@ -32,24 +32,24 @@ public class IndivAutoTest extends LinearOpMode {
          * Initialize the drive system variables.
          * The init() method of the hardware class does all the work here
          */
-         fl  = hardwareMap.get(DcMotor.class, "fl");
-         // fr  = hardwareMap.get(DcMotor.class, "fr");
-         // bl  = hardwareMap.get(DcMotor.class, "bl");
-         // br  = hardwareMap.get(DcMotor.class, "br" );
+         br  = hardwareMap.get(DcMotor.class, "br");
+         fr  = hardwareMap.get(DcMotor.class, "fr");
+         bl  = hardwareMap.get(DcMotor.class, "bl");
+         fl  = hardwareMap.get(DcMotor.class, "fl" );
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Resetting Encoders");    //
         telemetry.update();
 
+        br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         fl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        // fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        // br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        // bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        // fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        // br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        // bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Send telemetry message to indicate successful Encoder reset
 
@@ -58,7 +58,8 @@ public class IndivAutoTest extends LinearOpMode {
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        encoderDrive(DRIVE_SPEED,  100, -48, 48, -48, 10);  // S1: Forward 47 Inches with 5 Sec timeout
+        Forward(24/1.414);
+          // S1: Forward 47 Inches with 5 Sec timeout
         //encoderDrive(TURN_SPEED,   12, 12, 12, 12, 4.0); // S3: Turn 12 Inches with 4 Sec timeout
 
 
@@ -75,50 +76,57 @@ public class IndivAutoTest extends LinearOpMode {
      *  2) Move runs out of time
      *  3) Driver stops the opmode running.
      */
+    public void Forward(double inches){
+      encoderDrive(DRIVE_SPEED, -inches, inches, -inches, inches, 5.0);
+    }
+    public void Backward(double inches){
+      encoderDrive(DRIVE_SPEED, inches, -inches, inches, -inches, 5.0);
+    }
     public void encoderDrive(double speed,
                              double flInches, double frInches,double blInches, double brInches,
                              double timeoutS) {
+        int newbrtarget;
+        int newfrtarget;
         int newfltarget;
-        // int newfrtarget;
-        // int newbrtarget;
-        // int newbltarget;
+        int newbltarget;
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
+            newbrtarget = br.getCurrentPosition() + (int)(brInches * COUNTS_PER_INCH);
+            newfrtarget = fr.getCurrentPosition() + (int)(frInches * COUNTS_PER_INCH);
             newfltarget = fl.getCurrentPosition() + (int)(flInches * COUNTS_PER_INCH);
-            // newfrtarget = fr.getCurrentPosition() + (int)(frInches * COUNTS_PER_INCH);
-            // newbrtarget = br.getCurrentPosition() + (int)(brInches * COUNTS_PER_INCH);
-            // newbltarget = bl.getCurrentPosition() + (int)(blInches * COUNTS_PER_INCH);
+            newbltarget = bl.getCurrentPosition() + (int)(blInches * COUNTS_PER_INCH);
+            br.setTargetPosition(newbrtarget);
+            fr.setTargetPosition(newfrtarget);
             fl.setTargetPosition(newfltarget);
+            bl.setTargetPosition(newbltarget);
 
-            telemetry.addData("CurrentPos: ", String.valueOf(fl.getCurrentPosition()));
+            telemetry.addData("CurrentPos: ", String.valueOf(br.getCurrentPosition()));
 
-            telemetry.addData("TargetPos: ", String.valueOf(newfltarget));
+            telemetry.addData("TargetPos: ", String.valueOf(newbrtarget));
             telemetry.update();
-            //sleep(5000);
-            // fr.setTargetPosition(newfrtarget);
-            // br.setTargetPosition(newbrtarget);
-            // bl.setTargetPosition(newbltarget);
+
+
 
             // Turn On RUN_TO_POSITION
+            br.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            fr.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             fl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            // fr.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            // br.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            // bl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            bl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
             runtime.reset();
+            br.setPower(Math.abs(speed));
+            fr.setPower(Math.abs(speed));
+            bl.setPower(Math.abs(speed));
             fl.setPower(Math.abs(speed));
-            // fr.setPower(Math.abs(speed));
-            // bl.setPower(Math.abs(speed));
-            // br.setPower(Math.abs(speed));
 
             // telemetry.addData("fr: ", String.valueOf(fr.isBusy()));
             // telemetry.addData("bl: ", String.valueOf(bl.isBusy()));
-            // telemetry.addData("br: ", String.valueOf(br.isBusy()));
-            //sleep(2000);
+            // telemetry.addData("fl: ", String.valueOf(fl.isBusy()));
+
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
@@ -128,34 +136,35 @@ public class IndivAutoTest extends LinearOpMode {
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
                    (runtime.seconds() < timeoutS) &&
-                   (fl.isBusy()/* && fr.isBusy() && br.isBusy() && bl.isBusy())*/)) {
+                   (br.isBusy() && fr.isBusy() && fl.isBusy() && bl.isBusy())) {
 
                 // Display it for the driver.
                 telemetry.addData("Path: ", "Running");
-                telemetry.addData("fl: ", String.valueOf(fl.isBusy()));
+                telemetry.addData("br: ", String.valueOf(br.isBusy()));
                 telemetry.update();
             }
 
             // Stop all motion;
+            br.setPower(0);
+            fr.setPower(0);
             fl.setPower(0);
-            // fr.setPower(0);
-            // br.setPower(0);
-            // bl.setPower(0);
+            bl.setPower(0);
 
             // Turn off RUN_TO_POSITION
-            sleep(5000);
-            telemetry.addData("FinalPos: ", String.valueOf((fl.getCurrentPosition())/COUNTS_PER_INCH));
 
 
-            //telemetry.addData("DistanceTraveled: ", String.valueOf(fl.getCurrentPosition()-x));
+            telemetry.addData("FinalPos: ", String.valueOf((br.getCurrentPosition())/COUNTS_PER_INCH));
+            sleep(2000);
+
+            //telemetry.addData("DistanceTraveled: ", String.valueOf(br.getCurrentPosition()-x));
             telemetry.update();
-            sleep(5000);
+            sleep(2000);
+            br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            // fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            // br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            // bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            //  sleep(250);   // optional pause after each move
+            //     // optional pause after each move
         }
     }
 }
