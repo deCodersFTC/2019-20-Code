@@ -24,14 +24,14 @@ public class IndivAutoTest extends LinearOpMode {
     private DcMotor fr;
     private DcMotor fl;
     private DcMotor bl;
-    private DcMotor fmove;
+    private DcMotor foundationMotor;
 
     static final double     COUNTS_PER_MOTOR_REV    = 1120;    // eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1 ;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                                       (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.6;
+    static final double     DRIVE_SPEED             = 0.2;
     static final double     TURN_SPEED              = 0.5;
 
     double origAngle;
@@ -62,7 +62,7 @@ public class IndivAutoTest extends LinearOpMode {
          fr  = hardwareMap.get(DcMotor.class, "fr");
          bl  = hardwareMap.get(DcMotor.class, "bl");
          fl  = hardwareMap.get(DcMotor.class, "fl" );
-         fmove  = hardwareMap.get(DcMotor.class, "foundation" );
+         foundationMotor  = hardwareMap.get(DcMotor.class, "foundation" );
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Resetting Encoders");    //
@@ -72,26 +72,31 @@ public class IndivAutoTest extends LinearOpMode {
         fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         fl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        fmove.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        foundationMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        fmove.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        foundationMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Send telemetry message to indicate successful Encoder reset
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        slideLeft(29);
-        encoderFoundation(DRIVE_SPEED, 12, 5.0);
-        slideRight(29);
+        //slideLeft(29);
+        Foundation(0.2, 0.75, 5.0);
+        foundationMotor.setPower(0.25);
+        //sleep(2000);
+        slideRight(48);
+        foundationMotor.setPower(0);
+
+        //slideRight(29);
 
 
-        telemetry.addData("Path", "Complete");
-        telemetry.update();
+        //telemetry.addData("Path", "Complete");
+        //telemetry.update();
     }
 
     /*
@@ -144,25 +149,30 @@ public class IndivAutoTest extends LinearOpMode {
         }
       }
 
-    public void encoderFoundation(double speed, double fmove, double timeoutS){
-        double newfmovetarget;
+    public void Foundation(double speed, double fmove, double timeoutS){
+        int newfmovetarget;
         if (opModeIsActive()){
-          newfmovetarget = fmove.getCurrentPosition() + (fmove * COUNTS_PER_INCH);
-          fmove.setTargetPosition(newfmovetarget);
-          fmove.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+          newfmovetarget = foundationMotor.getCurrentPosition() + (int)(fmove * COUNTS_PER_INCH);
+          foundationMotor.setTargetPosition(newfmovetarget);
+          foundationMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
           runtime.reset();
-          fmove.setPower(Math.abs(speed));
+          foundationMotor.setPower(Math.abs(speed));
           while (opModeIsActive() &&
                  (runtime.seconds() < timeoutS) &&
-                 (fmove.isBusy())) {
+                 (foundationMotor.isBusy())) {
 
               // Display it for the driver.
-              telemetry.addData("Path: ", "Running");
-              telemetry.addData("fmove: ", String.valueOf(fmove.isBusy()));
+              telemetry.addData("Foundation: ", "Running");
+              telemetry.addData("fmove: ", String.valueOf(foundationMotor.isBusy()));
               telemetry.update();
           }
-          fmove.setPower(0);
-          fmove.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+          // Display it for the driver.
+          telemetry.addData("Foundation: ", "Complete");
+          telemetry.addData("fmove: ", String.valueOf(foundationMotor.isBusy()));
+          telemetry.update();
+
+          foundationMotor.setPower(0);
+          foundationMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 
