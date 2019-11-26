@@ -30,9 +30,12 @@
 
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -50,9 +53,9 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@TeleOp(name = "test", group = "Concept")
+@Autonomous(name = "Vuforia Test", group = "Pushbot")
 // @Disabled
-public class vuforiatestcode extends LinearOpMode {
+public class vuforiatest extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Stone";
     private static final String LABEL_SECOND_ELEMENT = "Skystone";
@@ -111,25 +114,10 @@ public class vuforiatestcode extends LinearOpMode {
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-                if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                    if (updatedRecognitions != null) {
-                      telemetry.addData("# Object Detected", updatedRecognitions.size());
 
-                      // step through the list of recognitions and display boundary info.
-                      int i = 0;
-                      for (Recognition recognition : updatedRecognitions) {
-                        telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                        telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                          recognition.getLeft(), recognition.getTop());
-                        telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                recognition.getRight(), recognition.getBottom());
-                      }
-                      telemetry.update();
-                    }
-                }
+              telemetry.addData("Skystone Detected", String.valueOf(isSkystone()));
+              telemetry.update();
+              sleep(3000);
             }
         }
 
@@ -137,6 +125,39 @@ public class vuforiatestcode extends LinearOpMode {
             tfod.shutdown();
         }
     }
+
+    private boolean isSkystone(){
+      telemetry.addData("checking Skystone", 1);
+      telemetry.update();
+
+      if (tfod != null) {
+        // getUpdatedRecognitions() will return null if no new information is available since
+        // the last time that call was made.
+        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+        if (updatedRecognitions != null) {
+          telemetry.addData("# Object Detected", updatedRecognitions.size());
+          telemetry.update();
+
+          // step through the list of recognitions and display boundary info
+          if(updatedRecognitions.size() != 1){
+            return false;
+          }
+          for (Recognition recognition : updatedRecognitions) {
+            telemetry.addData(String.format("label (%d)", 0), recognition.getLabel());
+            telemetry.update();
+            if(recognition.getLabel() == "Skystone"){
+              return true;
+            }
+            else {
+              return false;
+            }
+          }
+        }
+      }
+      return false;
+    }
+
+
 
     /**
      * Initialize the Vuforia localization engine.
