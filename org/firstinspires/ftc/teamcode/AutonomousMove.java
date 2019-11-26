@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import java.util.Locale;
@@ -29,7 +30,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 @Autonomous(name = "AutonomousMovementTester" ,group = "Testers")
 
-public class AutonomousMovementTester extends LinearOpMode {
+public class AutonomousMove extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Stone";
     private static final String LABEL_SECOND_ELEMENT = "Skystone";
@@ -127,7 +128,7 @@ public class AutonomousMovementTester extends LinearOpMode {
         encoderDrive(DRIVE_SPEED,-distance,-distance,distance,distance, 5);
     }
     public void Forwards(double distance){
-      //distance = (distance * 0.95) / 2;
+        distance = (distance * 100/18);
         encoderDrive(DRIVE_SPEED, distance, distance, -distance, -distance, 5);
     }
     public void TurnLeft(double degrees){
@@ -230,32 +231,32 @@ public class AutonomousMovementTester extends LinearOpMode {
         waitForStart();
         runtime.reset();
         if (opModeIsActive()){
-            Forwards(12);
-            SAM();
-            sleep(8000);
-            //AccurateTurn(360);
-            AccurateTurn(90);
-            SAM();
-            //sleep(8000);
-
-            // The code below is for the case the robot starts in top left side of the field. It is for when basic autonomous works. This is the movement of the bot during the autonomous that should be happening.
-            Forwards(2);
-            slideLeft(2);
-            Forwards(2);
-            foundation.setPower(0.7);
-            sleep(1000);
-            Backwards(3);
-            foundation.setPower(-0.1);
-            sleep(3000);
-            slideRight(6);
-            Forwards(3);
+            Forwards(100);
+            // Forwards(12);
+            // SAM();
+            // //AccurateTurn(360);
+            // AccurateTurn(90);
+            // SAM();
+            // //sleep(8000);
+            //
+            // // The code below is for the case the robot starts in top left side of the field. It is for when basic autonomous works. This is the movement of the bot during the autonomous that should be happening.
+            // Forwards(2);
+            // slideLeft(2);
+            // Forwards(2);
+            // foundation.setPower(0.7);
+            // sleep(1000);
+            // Backwards(3);
+            // foundation.setPower(-0.1);
+            // sleep(3000);
+            // slideRight(6);
+            // Forwards(3);
             //Scanning goes here
-            if (skystone==true){
-              extend.setPower(1);
-              // open claw
-            } else{
-              slideRight(2/3);
-            }
+            // if (skystone==true){
+            //   extend.setPower(1);
+            //   // open claw
+            // } else{
+            //   slideRight(2/3);
+            // }
 
             /* Tasks that need to be programed:
              * 1. Pull Foundation into building site

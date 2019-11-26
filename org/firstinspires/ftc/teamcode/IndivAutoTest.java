@@ -31,7 +31,7 @@ public class IndivAutoTest extends LinearOpMode {
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                                       (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.2;
+    static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
 
     double origAngle;
@@ -84,19 +84,35 @@ public class IndivAutoTest extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
+        if(opModeIsActive()){
+        Orientation runangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        float beginangle = runangles.firstAngle;
+        forward(30);
+        slideLeft(30);
+        turnRight(90);
+        Foundation(1, 0.75, 2.0);
+        foundationMotor.setPower(1);
+        slideRight(44);
+        Foundation(1, -0.75, 2.0);
+        Orientation intermediateangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        float superangle = intermediateangles.firstAngle;
+        turnRight(superangle - beginangle);
+        backward(5);
+        slideRight(44);
+        forward(56);
+        slideLeft(38);
+        Orientation interangle2 = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        float supeangel = interangle2.firstAngle;
+        turnRight(supeangel - beginangle - 90);
+        Foundation(1, 0.6, 2.0);
+        slideLeft(30);
+        Foundation(1, -0.6, 2.0);
 
-        //slideLeft(29);
-        Foundation(0.2, 0.75, 5.0);
-        foundationMotor.setPower(0.25);
-        //sleep(2000);
-        slideRight(48);
-        foundationMotor.setPower(0);
-
-        //slideRight(29);
 
 
-        //telemetry.addData("Path", "Complete");
-        //telemetry.update();
+        telemetry.addData("Path", "Complete");
+        telemetry.update();
+      }
     }
 
     /*
@@ -123,12 +139,17 @@ public class IndivAutoTest extends LinearOpMode {
       double dis = inches / 1.325;
       encoderDrive(DRIVE_SPEED, dis, dis, -dis, -dis, 5.0);
     }
-    public void turnLeft(double inches){
-      double dis = inches / 1.325;
+    public void turnLeft(double degrees){
+      double dis = (degrees * 51.05/360);
       encoderDrive(TURN_SPEED, dis, dis, dis, dis, 5.0);
     }
-    public void turnRight(double inches){
-      double dis = inches / 1.325;
+    public void TurnLeft2(double degrees){
+      double dis = (degrees * 51.05/360);
+      encoderDrive(1.0, dis, dis, dis, dis, 5.0);
+    }
+    //a --> a* 16.25PI/360
+    public void turnRight(double degrees){
+      double dis = (degrees * 51.05/360);
       encoderDrive(TURN_SPEED, -dis, -dis, -dis, -dis, 5.0);
     }
 
