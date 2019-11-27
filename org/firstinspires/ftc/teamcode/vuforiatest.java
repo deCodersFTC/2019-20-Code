@@ -35,6 +35,7 @@ public class vuforiatest extends LinearOpMode {
     private DcMotor fl;
     private DcMotor bl;
     private DcMotor foundationMotor;
+    private DcMotor extend;
 
     static final double     COUNTS_PER_MOTOR_REV    = 1120;    // eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1 ;     // This is < 1.0 if geared UP
@@ -86,6 +87,8 @@ public class vuforiatest extends LinearOpMode {
       if (tfod != null) {
           tfod.activate();
       }
+      extend = hardwareMap.get(DcMotor.class, "extend");
+
 
         /*
          * Initialize the drive system variables.
@@ -107,22 +110,26 @@ public class vuforiatest extends LinearOpMode {
          bl  = hardwareMap.get(DcMotor.class, "bl");
          fl  = hardwareMap.get(DcMotor.class, "fl" );
          foundationMotor  = hardwareMap.get(DcMotor.class, "foundation" );
+         extend = hardwareMap.get(DcMotor.class, "extend");
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Resetting Encoders");    //
         telemetry.update();
+
 
         br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         fl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         foundationMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        extend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         foundationMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Send telemetry message to indicate successful Encoder reset
 
@@ -281,7 +288,6 @@ public class vuforiatest extends LinearOpMode {
             telemetry.addData("Target angle", targetAngle);
             telemetry.addData("Current angle", turnAngles.firstAngle);
             telemetry.update();
-            sleep(5000);
         }
       }
 
@@ -317,6 +323,32 @@ public class vuforiatest extends LinearOpMode {
           }
         }
         return false;
+      }
+      public void extend(double speed, double exmove, double timeoutS){
+          int newexmovetarget;
+          if (opModeIsActive()){
+            newexmovetarget = extend.getCurrentPosition() + (int)(exmove * COUNTS_PER_INCH);
+            extend.setTargetPosition(newexmovetarget);
+            extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            runtime.reset();
+            extend.setPower(Math.abs(speed));
+            while (opModeIsActive() &&
+                   (runtime.seconds() < timeoutS) &&
+                   (extend.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Extend: ", "Running");
+                telemetry.addData("exmove: ", String.valueOf(extend.isBusy()));
+                telemetry.update();
+            }
+            // Display it for the driver.
+            telemetry.addData("Extend: ", "Complete");
+            telemetry.addData("exmove: ", String.valueOf(extend.isBusy()));
+            telemetry.update();
+
+            extend.setPower(0);
+            extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+          }
       }
 
     public void Foundation(double speed, double fmove, double timeoutS){
