@@ -23,7 +23,8 @@ public class Integrate extends LinearOpMode {
     double PowerX;
     double PowerY;
     double PowerZ;
-    private double sensitivity = 1;
+    private double sensitivity = 0.8;
+    private double sens = 0.8;
 
     @Override
     public void runOpMode() {
@@ -119,16 +120,26 @@ public class Integrate extends LinearOpMode {
               PowerX = 0;
             }
 
-            PowerY = gamepad2.right_trigger - gamepad2.left_trigger;
-            if(gamepad2.x){
-              PowerZ = -0.5;
+            PowerY = gamepad2.left_trigger - gamepad2.right_trigger;
+            if(gamepad1.dpad_right){
+              sens = 1;
             }
-            else if(gamepad2.b){
-              PowerZ = 0.5;
+            else if(gamepad1.dpad_left){
+              sens = 0.5;
             }
-            else{
-              PowerZ = 0;
-            }
+            PowerY *= sens;
+
+
+            PowerZ = gamepad1.right_trigger - gamepad1.left_trigger;
+            // if(gamepad2.x){
+            //   PowerZ = -0.5;
+            // }
+            // else if(gamepad2.b){
+            //   PowerZ = 0.5;
+            // }
+            // else{
+            //   PowerZ = 0;
+            // }
             foundation.setPower(PowerZ);
             extend.setPower(PowerY);
             grab.setPower(PowerX);

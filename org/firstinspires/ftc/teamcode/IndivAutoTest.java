@@ -87,26 +87,22 @@ public class IndivAutoTest extends LinearOpMode {
         if(opModeIsActive()){
         Orientation runangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         float beginangle = runangles.firstAngle;
-        forward(30);
+        forward(27);
         slideLeft(30);
         turnRight(90);
         Foundation(1, 0.75, 2.0);
         foundationMotor.setPower(1);
         slideRight(44);
-        Foundation(1, -0.75, 2.0);
+
+
+        turnLeft(270);
+        forward(6.9);
+        foundationMotor.setPower(-1);
         Orientation intermediateangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         float superangle = intermediateangles.firstAngle;
         turnRight(superangle - beginangle);
-        backward(5);
-        slideRight(44);
-        forward(56);
-        slideLeft(38);
-        Orientation interangle2 = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        float supeangel = interangle2.firstAngle;
-        turnRight(supeangel - beginangle - 90);
-        Foundation(1, 0.6, 2.0);
-        slideLeft(30);
-        Foundation(1, -0.6, 2.0);
+        slideRight(50);
+
 
 
 
