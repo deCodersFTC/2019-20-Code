@@ -245,25 +245,21 @@ public class vuforiatest extends LinearOpMode {
      *  2) Move runs out of time
      *  3) Driver stops the opmode running.
      */
-    public void forward(double inches){
-      double dis = inches / 1.325;
-      encoderDrive(DRIVE_SPEED, -dis, dis, -dis, dis, 5.0);
-    }
-    public void backward(double inches){
-      double dis = inches / 1.325;
-      encoderDrive(DRIVE_SPEED, dis, -dis, dis, -dis, 5.0);
-    }
-    public void slideRight(double inches){
-      double dis = inches / 1.325;
-      encoderDrive(DRIVE_SPEED, -dis, -dis, dis, dis, 5.0);
-    }
-    public void slideLeft(double inches){
-      double dis = inches / 1.325;
-      encoderDrive(DRIVE_SPEED, dis, dis, -dis, -dis, 5.0);
-    }
-    public void turnLeft(double degrees){
-      double dis = (degrees * 51.05/360);
-      encoderDrive(TURN_SPEED, dis, dis, dis, dis, 5.0);
+     public void forward(double inches){
+       double dis = inches / 1.325;
+       encoderDrive(DRIVE_SPEED, dis, dis, dis, dis, 5.0);
+     }
+     public void backward(double inches){
+       double dis = inches / 1.325;
+       encoderDrive(DRIVE_SPEED, -dis, -dis, -dis, -dis, 5.0);
+     }
+     public void slideRight(double inches){
+       double dis = inches / 1.325;
+       encoderDrive(DRIVE_SPEED, dis, -dis, -dis, dis, 5.0);
+     }
+     public void slideLeft(double inches){
+       double dis = inches / 1.325;
+       encoderDrive(DRIVE_SPEED, -dis, dis, dis, -dis, 5.0); 
     }
     public void TurnLeft2(double degrees){
       double dis = (degrees * 51.05/360);
