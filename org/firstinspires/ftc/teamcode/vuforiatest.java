@@ -137,7 +137,7 @@ public class vuforiatest extends LinearOpMode {
         waitForStart();
         if(opModeIsActive()){
           boolean skystoneFound = false;
-          slideRight(22);
+          forward(22);
           //forward(2);
 
           sleep(1000);
@@ -151,7 +151,7 @@ public class vuforiatest extends LinearOpMode {
             }
             else{
               telemetry.addData("Position 1: ", "Stone");
-              backward(8);
+              slideRight(8);
               telemetry.update();
             }
 
@@ -168,7 +168,7 @@ public class vuforiatest extends LinearOpMode {
             }
             else{
               telemetry.addData("Position 2: ", "Stone");
-              backward(8);
+              slideRight(8);
               telemetry.update();
             }
           }
@@ -259,7 +259,7 @@ public class vuforiatest extends LinearOpMode {
      }
      public void slideLeft(double inches){
        double dis = inches / 1.325;
-       encoderDrive(DRIVE_SPEED, -dis, dis, dis, -dis, 5.0); 
+       encoderDrive(DRIVE_SPEED, -dis, dis, dis, -dis, 5.0);
     }
     public void TurnLeft2(double degrees){
       double dis = (degrees * 51.05/360);
