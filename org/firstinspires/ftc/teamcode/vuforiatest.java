@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -36,13 +37,14 @@ public class vuforiatest extends LinearOpMode {
     private DcMotor bl;
     private DcMotor foundationMotor;
     private DcMotor extend;
+    private CRServo grab;
 
     static final double     COUNTS_PER_MOTOR_REV    = 1120;    // eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1 ;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                                       (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.2;
+    static final double     DRIVE_SPEED             = 0.4;
     static final double     TURN_SPEED              = 0.5;
 
     /*
@@ -111,6 +113,7 @@ public class vuforiatest extends LinearOpMode {
          fl  = hardwareMap.get(DcMotor.class, "fl" );
          foundationMotor  = hardwareMap.get(DcMotor.class, "foundation" );
          extend = hardwareMap.get(DcMotor.class, "extend");
+         grab = hardwareMap.get(CRServo.class, "grab");
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Resetting Encoders");    //
@@ -137,10 +140,11 @@ public class vuforiatest extends LinearOpMode {
         waitForStart();
         if(opModeIsActive()){
           boolean skystoneFound = false;
-          forward(22);
+          forward(24);
           //forward(2);
 
           sleep(1000);
+
           if (!skystoneFound) {
             if(isSkystone()){
               telemetry.addData("Position 1: ", "Skystone");
@@ -148,6 +152,7 @@ public class vuforiatest extends LinearOpMode {
               //Foundation(1, -0.75, 2.0);
               telemetry.update();
               skystoneFound = true;
+              slideLeft(4);
             }
             else{
               telemetry.addData("Position 1: ", "Stone");
@@ -157,6 +162,7 @@ public class vuforiatest extends LinearOpMode {
 
           }
 
+
           sleep(1000);
           if (!skystoneFound) {
             if(isSkystone()){
@@ -165,6 +171,7 @@ public class vuforiatest extends LinearOpMode {
               //Foundation(1, -0.75, 2.0);
               telemetry.update();
               skystoneFound = true;
+              slideLeft(4);
             }
             else{
               telemetry.addData("Position 2: ", "Stone");
@@ -172,8 +179,21 @@ public class vuforiatest extends LinearOpMode {
               telemetry.update();
             }
           }
+          if(!skystoneFound){
+            //slideLeft(3);
+          }
+
           sleep(1000);
-          turnRight(90);
+          extend(0.5, 0.5, 2);
+          forward(6.5);
+          grab.setPower(0.5);
+          sleep(2500);
+          grab.setPower(0);
+          extend(0.5, -1.5, 2);
+          grab.setPower(-0.4);
+          sleep(1000);
+          extend(0.5, 2, 2);
+          sleep(5000);
           /*
           if(!skystoneFound && isSkystone()){
             telemetry.addData("Position 3: ", "Skystone");
@@ -246,20 +266,24 @@ public class vuforiatest extends LinearOpMode {
      *  3) Driver stops the opmode running.
      */
      public void forward(double inches){
-       double dis = inches / 1.325;
-       encoderDrive(DRIVE_SPEED, dis, dis, dis, dis, 5.0);
+       double dis = inches;
+       encoderDrive(DRIVE_SPEED, -dis, dis, -dis, dis, 5.0);
      }
      public void backward(double inches){
-       double dis = inches / 1.325;
-       encoderDrive(DRIVE_SPEED, -dis, -dis, -dis, -dis, 5.0);
+       double dis = inches;
+       encoderDrive(DRIVE_SPEED, dis, -dis, dis, -dis, 5.0);
      }
      public void slideRight(double inches){
-       double dis = inches / 1.325;
-       encoderDrive(DRIVE_SPEED, dis, -dis, -dis, dis, 5.0);
+       double dis = 5/4 * inches;
+       encoderDrive(DRIVE_SPEED, -dis, -dis, dis, dis, 5.0);
      }
      public void slideLeft(double inches){
-       double dis = inches / 1.325;
-       encoderDrive(DRIVE_SPEED, -dis, dis, dis, -dis, 5.0);
+       double dis = 5/4 * inches;
+       encoderDrive(DRIVE_SPEED, dis, dis, -dis, -dis, 5.0);
+    }
+    public void turnLeft(double degrees){
+      double dis = (degrees * 51.05/360);
+      encoderDrive(TURN_SPEED, dis, dis, dis, dis, 5.0);
     }
     public void TurnLeft2(double degrees){
       double dis = (degrees * 51.05/360);

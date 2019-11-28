@@ -32,7 +32,7 @@ public class IndivAutoTest extends LinearOpMode {
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                                       (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.6;
+    static final double     DRIVE_SPEED             = 0.3;
     static final double     TURN_SPEED              = 0.5;
 
     double origAngle;
@@ -89,35 +89,30 @@ public class IndivAutoTest extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         if(opModeIsActive()){
-          for(int i=0; i<1; i--){
-            forward(24);
-            backward(24);
-            slideRight(24);
-            slideLeft(24);
-            turnLeft(90);
-            turnRight(90);
-          }
-        // Orientation runangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        // float beginangle = runangles.firstAngle;
-        // forward(27);
-        // slideLeft(30);
-        // turnRight(90);
-        // Foundation(1, 0.75, 2.0);
-        // foundationMotor.setPower(1);
-        // slideRight(44);
-        //
-        //
-        // turnLeft(270);
-        // forward(6.9);
-        // foundationMotor.setPower(-1);
-        // Orientation intermediateangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        // float superangle = intermediateangles.firstAngle;
-        // turnRight(superangle - beginangle);
-        // slideRight(50);
+        slideLeft(20);
+        slideRight(20);
+        /*
+        Orientation runangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        float beginangle = runangles.firstAngle;
+        forward(27);
+        slideLeft(30);
+        turnRight(90);
+        Foundation(1, 0.75, 2.0);
+        foundationMotor.setPower(1);
+        slideRight(44);
+
+
+        turnLeft(270);
+        forward(6.9);
+        foundationMotor.setPower(-1);
+        Orientation intermediateangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        float superangle = intermediateangles.firstAngle;
+        turnRight(superangle - beginangle);
+        slideRight(50);
 
 
 
-
+        */
         telemetry.addData("Path", "Complete");
         telemetry.update();
       }
@@ -131,40 +126,33 @@ public class IndivAutoTest extends LinearOpMode {
      *  2) Move runs out of time
      *  3) Driver stops the opmode running.
      */
-    public void forward(double inches){
-      // double dis = inches / 1.325;
-      double dis = inches;
-      encoderDrive(DRIVE_SPEED, -dis, dis, -dis, dis, 5.0);
-    }
-    public void backward(double inches){
-      // double dis = inches / 1.325;
-      double dis = inches;
-      encoderDrive(DRIVE_SPEED, dis, -dis, dis, -dis, 5.0);
-    }
-    public void slideRight(double inches){
-      // double dis = inches / 1.325;
-      double dis = inches;
-      encoderDrive(DRIVE_SPEED, -dis, -dis, dis, dis, 5.0);
-    }
-    public void slideLeft(double inches){
-      // double dis = inches / 1.325;
-      double dis = inches;
-      encoderDrive(DRIVE_SPEED, dis, dis, -dis, -dis, 5.0);
+     public void forward(double inches){
+       double dis = inches;
+       encoderDrive(DRIVE_SPEED, -dis, dis, -dis, dis, 5.0);
+     }
+     public void backward(double inches){
+       double dis = inches;
+       encoderDrive(DRIVE_SPEED, dis, -dis, dis, -dis, 5.0);
+     }
+     public void slideRight(double inches){
+       double dis = 5/4 * inches;
+       encoderDrive(DRIVE_SPEED, -dis, -dis, dis, dis, 5.0);
+     }
+     public void slideLeft(double inches){
+       double dis = 5/4 * inches;
+       encoderDrive(DRIVE_SPEED, dis, dis, -dis, -dis, 5.0);
     }
     public void turnLeft(double degrees){
-      // double dis = (degrees * 51.05/360);
-      double dis = (degrees * 24/90);
+      double dis = (degrees * 51.05/360);
       encoderDrive(TURN_SPEED, dis, dis, dis, dis, 5.0);
     }
     public void TurnLeft2(double degrees){
-      // double dis = (degrees * 51.05/360);
-      double dis = (degrees * 24/90);
+      double dis = (degrees * 51.05/360);
       encoderDrive(1.0, dis, dis, dis, dis, 5.0);
     }
     //a --> a* 16.25PI/360
     public void turnRight(double degrees){
-      // double dis = (degrees * 51.05/360);
-      double dis = (degrees * 24/90);
+      double dis = (degrees * 51.05/360);
       encoderDrive(TURN_SPEED, -dis, -dis, -dis, -dis, 5.0);
     }
 
