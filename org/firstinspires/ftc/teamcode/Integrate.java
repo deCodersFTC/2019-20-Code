@@ -40,9 +40,9 @@ public class Integrate extends LinearOpMode {
         br = hardwareMap.get(DcMotor.class, "br");
 
         fl.setDirection(DcMotor.Direction.FORWARD);
-        fr.setDirection(DcMotor.Direction.FORWARD);
+        fr.setDirection(DcMotor.Direction.REVERSE);
         bl.setDirection(DcMotor.Direction.FORWARD);
-        br.setDirection(DcMotor.Direction.FORWARD);
+        br.setDirection(DcMotor.Direction.REVERSE);
 
         fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -60,18 +60,18 @@ public class Integrate extends LinearOpMode {
             double LBP;
 
             double D = gamepad1.left_stick_y;
-            double S = gamepad1.left_stick_x;
-            double T = gamepad1.right_stick_x;
+            double S = -gamepad1.left_stick_x;
+            double T = -gamepad1.right_stick_x;
 
             // LFP = T - S - D;
             // RFP = T + S - D;
             // LBP = T - S + D;
             // RBP = T + S + D;
 
-            LFP = D - S - T;
-            RFP = -D - S - T;
-            LBP = D + S - T;
-            RBP = -D + S - T;
+            LFP = D + S + T;
+            RFP = D - S - T;
+            LBP = D - S + T;
+            RBP = D + S - T;
 
 
 			// This can be anywhere from 0.5 to 1.
