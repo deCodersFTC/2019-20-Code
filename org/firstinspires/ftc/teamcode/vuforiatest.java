@@ -44,8 +44,9 @@ public class vuforiatest extends LinearOpMode {
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                                       (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.4;
-    static final double     TURN_SPEED              = 0.5;
+    static final double     DRIVE_SPEED             = 0.8;
+    static final double     TURN_SPEED              = 0.75;
+    static final double     SLIDE_SPEED             = 0.5;
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -89,143 +90,104 @@ public class vuforiatest extends LinearOpMode {
       if (tfod != null) {
           tfod.activate();
       }
-      extend = hardwareMap.get(DcMotor.class, "extend");
+
+      /*
+       * Initialize the drive system variables.
+       * The init() method of the hardware class does all the work here
+       */
+
+       imu = hardwareMap.get(BNO055IMU.class, "imu");
+       BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+       parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+       parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+       parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+       parameters.loggingEnabled = true;
+       parameters.loggingTag = "IMU";
+       parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+       imu.initialize(parameters);
+
+       br  = hardwareMap.get(DcMotor.class, "br");
+       fr  = hardwareMap.get(DcMotor.class, "fr");
+       bl  = hardwareMap.get(DcMotor.class, "bl");
+       fl  = hardwareMap.get(DcMotor.class, "fl" );
+       foundationMotor  = hardwareMap.get(DcMotor.class, "foundation" );
+       extend = hardwareMap.get(DcMotor.class, "extend");
+       grab = hardwareMap.get(CRServo.class, "grab");
+
+      // Send telemetry message to signify robot waiting;
+      telemetry.addData("Status", "Resetting Encoders");    //
+      telemetry.update();
+
+      br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+      fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+      fl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+      bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+      foundationMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+      extend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+      br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+      fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+      fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+      bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+      foundationMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+      extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+      // Send telemetry message to indicate successful Encoder reset
+      telemetry.addData("Status", "Encoders Reset. Ready");    //
+      telemetry.update();
+
+      // Wait for the game to start (driver presses PLAY)
+      waitForStart();
+
+      int stone_position = detect_skystone_position();
+      int distanceFoundation = 80 + (stone_position - 1)*8;
+      pickSkystone();
+      sleep(1000);
+      turnLeft(90);
+      dropSkystone();
+      backward(DRIVE_SPEED, distanceFoundation);
+      //forward(DRIVE_SPEED, distanceFoundation+24);
+      turnLeft(-90);
+      backward(DRIVE_SPEED, 12);
+      Foundation(1, 0.5, 1.0);
+      foundationMotor.setPower(0.25);
+      forward(0.2, 36);
+      Foundation(1, -0.5, 1.0);
+      slideLeft(50);
 
 
+        // We should be in front of the stone to be picked
         /*
-         * Initialize the drive system variables.
-         * The init() method of the hardware class does all the work here
-         */
-
-         imu = hardwareMap.get(BNO055IMU.class, "imu");
-         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-         parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-         parameters.loggingEnabled = true;
-         parameters.loggingTag = "IMU";
-         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-         imu.initialize(parameters);
-
-         br  = hardwareMap.get(DcMotor.class, "br");
-         fr  = hardwareMap.get(DcMotor.class, "fr");
-         bl  = hardwareMap.get(DcMotor.class, "bl");
-         fl  = hardwareMap.get(DcMotor.class, "fl" );
-         foundationMotor  = hardwareMap.get(DcMotor.class, "foundation" );
-         extend = hardwareMap.get(DcMotor.class, "extend");
-         grab = hardwareMap.get(CRServo.class, "grab");
-
-        // Send telemetry message to signify robot waiting;
-        telemetry.addData("Status", "Resetting Encoders");    //
-        telemetry.update();
-
-
-        br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        fl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        foundationMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        extend.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        foundationMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        // Send telemetry message to indicate successful Encoder reset
-
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
-        if(opModeIsActive()){
-          boolean skystoneFound = false;
-          forward(24);
-          //forward(2);
-
-          sleep(1000);
-
-          if (!skystoneFound) {
-            if(isSkystone()){
-              telemetry.addData("Position 1: ", "Skystone");
-              //Foundation(1, 0.75, 2.0);
-              //Foundation(1, -0.75, 2.0);
-              telemetry.update();
-              skystoneFound = true;
-              slideLeft(4);
-            }
-            else{
-              telemetry.addData("Position 1: ", "Stone");
-              slideRight(8);
-              telemetry.update();
-            }
-
-          }
-
-
-          sleep(1000);
-          if (!skystoneFound) {
-            if(isSkystone()){
-              telemetry.addData("Position 2: ", "Skystone");
-              //Foundation(1, 0.75, 2.0);
-              //Foundation(1, -0.75, 2.0);
-              telemetry.update();
-              skystoneFound = true;
-              slideLeft(4);
-            }
-            else{
-              telemetry.addData("Position 2: ", "Stone");
-              slideRight(8);
-              telemetry.update();
-            }
-          }
-          if(!skystoneFound){
-            //slideLeft(3);
-          }
-
-          sleep(1000);
-          extend(0.5, 0.5, 2);
-          forward(6.5);
-          grab.setPower(0.5);
-          sleep(2500);
-          grab.setPower(0);
-          extend(0.5, -1.5, 2);
-          grab.setPower(-0.4);
-          sleep(1000);
-          extend(0.5, 2, 2);
-          sleep(5000);
-          /*
-          if(!skystoneFound && isSkystone()){
-            telemetry.addData("Position 3: ", "Skystone");
-            Foundation(1, 0.75, 2.0);
-            Foundation(1, -0.75, 2.0);
-            telemetry.update();
-          }
-          else{
-            telemetry.addData("Position 3: ", "Stone");
-            telemetry.update();
-          }
-          */
-
-          // We are in front of the skystone
-
-
-
-
-
-
-
-
-
-
-
-
-
+        extend(1, 0.5, 2);
+        forward(DRIVE_SPEED, 8.5);
+        grab.setPower(1);
+        sleep(2500);
+        grab.setPower(0);
+        extend(1, -1.5, 2);
+        grab.setPower(-0.4);
+        extend(1, 1, 2);
+        backward(DRIVE_SPEED, 4);
+        AccurateTurn(90);
+        forward(DRIVE_SPEED, distanceFoundation);
+        AccurateTurn(-90);
+        forward(DRIVE_SPEED, 8);
+        grab.setPower(0.75);
+        sleep(500);
+        grab.setPower(0);
+        extend(1, 1.5, 2);
+        slideLeft(12);
+        backward(DRIVE_SPEED, 4);
+        AccurateTurn(180);
+        backward(DRIVE_SPEED, 4);
+        foundationMotor.setPower(1);
+        sleep(1000);
+        foundationMotor.setPower(0);
+        */
 
         /* Arul: Temporarily commented out Repositioning code for Vuforia testing
         Orientation runangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         float beginangle = runangles.firstAngle;
-        forward(30);
+        forward(DRIVE_SPEED, 30);
         slideLeft(30);
         turnRight(90);
         Foundation(1, 0.75, 2.0);
@@ -235,9 +197,9 @@ public class vuforiatest extends LinearOpMode {
         Orientation intermediateangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         float superangle = intermediateangles.firstAngle;
         turnRight(superangle - beginangle);
-        backward(5);
+        backward(DRIVE_SPEED, 5);
         slideRight(44);
-        forward(56);
+        forward(DRIVE_SPEED, 56);
         slideLeft(38);
         Orientation interangle2 = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         float supeangel = interangle2.firstAngle;
@@ -255,7 +217,61 @@ public class vuforiatest extends LinearOpMode {
       if (tfod != null) {
           tfod.shutdown();
       }
-}}
+    }
+
+    private void dropSkystone(){
+      Foundation(1, -0.5, 1.0);
+    }
+
+    private void pickSkystone(){
+      turnLeft(180);
+      backward(DRIVE_SPEED, 10);
+      Foundation(1, 0.5, 1.0);
+      forward(DRIVE_SPEED, 10);
+    }
+
+    private int detect_skystone_position(){
+
+      boolean skystoneFound = false;
+      int stonePosition = 1;
+
+      if(opModeIsActive()){
+        forward(DRIVE_SPEED, 22);
+
+        if (!skystoneFound) {
+          if(isSkystone()){
+            telemetry.addData("Position 1: ", "Skystone");
+            telemetry.update();
+            skystoneFound = true;
+            slideLeft(4);
+          }
+          else{
+            telemetry.addData("Position 1: ", "Stone");
+            slideRight(10);
+            telemetry.update();
+          }
+
+        }
+        if (!skystoneFound) {
+          if(isSkystone()){
+            telemetry.addData("Position 2: ", "Skystone");
+            telemetry.update();
+            skystoneFound = true;
+            stonePosition = 2;
+            slideLeft(4);
+          }
+          else{
+            telemetry.addData("Position 2: ", "Stone");
+            slideRight(8);
+            telemetry.update();
+          }
+        }
+        if(!skystoneFound){
+          stonePosition = 3;
+        }
+    }
+    return stonePosition;
+  }
 
     /*
      *  Method to perfmorm a relative move, based on encoder counts.
@@ -265,33 +281,29 @@ public class vuforiatest extends LinearOpMode {
      *  2) Move runs out of time
      *  3) Driver stops the opmode running.
      */
-     public void forward(double inches){
+     public void forward(double speed, double inches){
        double dis = inches;
-       encoderDrive(DRIVE_SPEED, -dis, dis, -dis, dis, 5.0);
+       encoderDrive(speed, -dis, dis, -dis, dis, 5.0);
      }
-     public void backward(double inches){
+     public void backward(double speed, double inches){
        double dis = inches;
-       encoderDrive(DRIVE_SPEED, dis, -dis, dis, -dis, 5.0);
+       encoderDrive(speed, dis, -dis, dis, -dis, 5.0);
      }
      public void slideRight(double inches){
        double dis = 5/4 * inches;
-       encoderDrive(DRIVE_SPEED, -dis, -dis, dis, dis, 5.0);
+       encoderDrive(SLIDE_SPEED, -dis, -dis, dis, dis, 5.0);
      }
      public void slideLeft(double inches){
        double dis = 5/4 * inches;
-       encoderDrive(DRIVE_SPEED, dis, dis, -dis, -dis, 5.0);
+       encoderDrive(SLIDE_SPEED, dis, dis, -dis, -dis, 5.0);
     }
     public void turnLeft(double degrees){
-      double dis = (degrees * 51.05/360);
+      double dis = (degrees * (3.14 * 23/ 360));
       encoderDrive(TURN_SPEED, dis, dis, dis, dis, 5.0);
-    }
-    public void TurnLeft2(double degrees){
-      double dis = (degrees * 51.05/360);
-      encoderDrive(1.0, dis, dis, dis, dis, 5.0);
     }
     //a --> a* 16.25PI/360
     public void turnRight(double degrees){
-      double dis = (degrees * 51.05/360);
+      double dis = (degrees * (3.14 * 23/ 360));
       encoderDrive(TURN_SPEED, -dis, -dis, -dis, -dis, 5.0);
     }
 
@@ -300,20 +312,24 @@ public class vuforiatest extends LinearOpMode {
         double origAngle = turnAngles.firstAngle;
         double targetAngle = origAngle + degrees;
         double difference = degrees;
-        while (Math.abs(difference) > 1) {
-            turnRight(difference * 0.9);
-            turnAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            difference = targetAngle - turnAngles.firstAngle;
-            telemetry.addData("Difference", difference);
-            telemetry.addData("Target angle", targetAngle);
-            telemetry.addData("Current angle", turnAngles.firstAngle);
-            telemetry.update();
+        telemetry.addData("Difference", difference);
+        telemetry.addData("Target angle", targetAngle);
+        telemetry.addData("Current angle", turnAngles.firstAngle);
+        telemetry.update();
+
+        while (Math.abs(difference) > 0.95) {
+          turnLeft(difference);
+          turnAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+          difference = targetAngle - turnAngles.firstAngle;
+          telemetry.addData("Difference", difference);
+          telemetry.addData("Target angle", targetAngle);
+          telemetry.addData("Current angle", turnAngles.firstAngle);
+          telemetry.update();
         }
       }
 
       private boolean isSkystone(){
-
-
+        sleep(1000);
         if (tfod != null) {
           // getUpdatedRecognitions() will return null if no new information is available since
           // the last time that call was made.
@@ -326,7 +342,6 @@ public class vuforiatest extends LinearOpMode {
             if(updatedRecognitions.size() != 1){
               telemetry.addData("# of Detected Stones ", String.valueOf(updatedRecognitions.size()));
               telemetry.update();
-              sleep(2000);
               return false;
             }
 
@@ -399,25 +414,26 @@ public class vuforiatest extends LinearOpMode {
     }
 
     public void encoderDrive(double speed,
-                             double flInches, double frInches,double blInches, double brInches,
+                             double flInches, double frInches, double blInches, double brInches,
                              double timeoutS) {
         int newbrtarget;
+        int newbltarget;
         int newfrtarget;
         int newfltarget;
-        int newbltarget;
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
             newbrtarget = br.getCurrentPosition() + (int)(brInches * COUNTS_PER_INCH);
+            newbltarget = bl.getCurrentPosition() + (int)(blInches * COUNTS_PER_INCH);
             newfrtarget = fr.getCurrentPosition() + (int)(frInches * COUNTS_PER_INCH);
             newfltarget = fl.getCurrentPosition() + (int)(flInches * COUNTS_PER_INCH);
-            newbltarget = bl.getCurrentPosition() + (int)(blInches * COUNTS_PER_INCH);
             br.setTargetPosition(newbrtarget);
+            bl.setTargetPosition(newbltarget);
             fr.setTargetPosition(newfrtarget);
             fl.setTargetPosition(newfltarget);
-            bl.setTargetPosition(newbltarget);
+
 
             telemetry.addData("CurrentPos: ", String.valueOf(br.getCurrentPosition()));
 
@@ -428,15 +444,15 @@ public class vuforiatest extends LinearOpMode {
 
             // Turn On RUN_TO_POSITION
             br.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            bl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             fr.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             fl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            bl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
             runtime.reset();
             br.setPower(Math.abs(speed));
-            fr.setPower(Math.abs(speed));
             bl.setPower(Math.abs(speed));
+            fr.setPower(Math.abs(speed));
             fl.setPower(Math.abs(speed));
 
             // telemetry.addData("fr: ", String.valueOf(fr.isBusy()));
@@ -513,5 +529,4 @@ public class vuforiatest extends LinearOpMode {
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
-
 }

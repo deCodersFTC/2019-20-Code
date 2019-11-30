@@ -130,7 +130,7 @@ public class Integrate extends LinearOpMode {
             PowerY *= sens;
 
 
-            PowerZ = gamepad1.right_trigger - gamepad1.left_trigger;
+            PowerZ = (gamepad1.left_trigger - gamepad1.right_trigger) * sensitivity;
             // if(gamepad2.x){
             //   PowerZ = -0.5;
             // }
