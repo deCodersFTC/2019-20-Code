@@ -44,8 +44,8 @@ public class vuforiatest extends LinearOpMode {
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                                       (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.8;
-    static final double     TURN_SPEED              = 0.25;
+    static final double     DRIVE_SPEED             = 1;
+    static final double     TURN_SPEED              = 0.5;
     static final double     SLIDE_SPEED             = 0.5;
 
     /*
@@ -147,7 +147,7 @@ public class vuforiatest extends LinearOpMode {
       backward(DRIVE_SPEED, distanceFoundation);
       //forward(DRIVE_SPEED, distanceFoundation+24);
       turnLeft(-90);
-      backward(DRIVE_SPEED, 12);
+      backward(DRIVE_SPEED, 8);
       Foundation(1, 0.5, 1.0);
       foundationMotor.setPower(0.25);
       forward(0.2, 40);
@@ -175,7 +175,7 @@ public class vuforiatest extends LinearOpMode {
       int stonePosition = 1;
 
       if(opModeIsActive()){
-        backward(DRIVE_SPEED, 20);
+        backward(DRIVE_SPEED, 18);
 
         if (!skystoneFound) {
           if(isSkystone()){
@@ -222,12 +222,13 @@ public class vuforiatest extends LinearOpMode {
      */
      public void forward(double speed, double inches){
        double dis = inches;
-       encoderDrive(speed, -dis, dis, -dis, dis, 5.0);
+       encoderDrive(speed, -dis, dis, -dis, dis, 10.0);
      }
      public void backward(double speed, double inches){
        double dis = inches;
-       encoderDrive(speed, dis, -dis, dis, -dis, 5.0);
+       encoderDrive(speed, dis, -dis, dis, -dis, 10.0);
      }
+
      public void slideRight(double inches){
        double dis = 5/4 * inches;
        encoderDrive(SLIDE_SPEED, -dis, -dis, dis, dis, 5.0);
@@ -359,9 +360,16 @@ public class vuforiatest extends LinearOpMode {
         int newbltarget;
         int newfrtarget;
         int newfltarget;
+        boolean start_stop_opt = false;
 
+        if (speed < 0.5 || brInches < 5) {
+          start_stop_opt = false;
+        } else {
+          start_stop_opt = true;
+        }
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
+            int orgbrposition = br.getCurrentPosition();
 
             // Determine new target position, and pass to motor controller
             newbrtarget = br.getCurrentPosition() + (int)(brInches * COUNTS_PER_INCH);
@@ -372,7 +380,6 @@ public class vuforiatest extends LinearOpMode {
             bl.setTargetPosition(newbltarget);
             fr.setTargetPosition(newfrtarget);
             fl.setTargetPosition(newfltarget);
-
 
             telemetry.addData("CurrentPos: ", String.valueOf(br.getCurrentPosition()));
 
@@ -389,10 +396,18 @@ public class vuforiatest extends LinearOpMode {
 
             // reset the timeout time and start motion.
             runtime.reset();
-            br.setPower(Math.abs(speed));
-            bl.setPower(Math.abs(speed));
-            fr.setPower(Math.abs(speed));
-            fl.setPower(Math.abs(speed));
+            if (start_stop_opt) {
+              br.setPower(Math.abs(speed*0.25));
+              bl.setPower(Math.abs(speed*0.25));
+              fr.setPower(Math.abs(speed*0.25));
+              fl.setPower(Math.abs(speed*0.25));
+            } else {
+              // no point optimizing
+              br.setPower(Math.abs(speed));
+              bl.setPower(Math.abs(speed));
+              fr.setPower(Math.abs(speed));
+              fl.setPower(Math.abs(speed));
+            }
 
             // telemetry.addData("fr: ", String.valueOf(fr.isBusy()));
             // telemetry.addData("bl: ", String.valueOf(bl.isBusy()));
@@ -408,6 +423,33 @@ public class vuforiatest extends LinearOpMode {
             while (opModeIsActive() &&
                    (runtime.seconds() < timeoutS) &&
                    (br.isBusy() && fr.isBusy() && fl.isBusy() && bl.isBusy())) {
+                     int curbrposition = br.getCurrentPosition();
+                     if (Math.abs(curbrposition - orgbrposition) < 0.05*(Math.abs(newbrtarget - orgbrposition))) {
+                       br.setPower(Math.abs(speed*0.25));
+                       bl.setPower(Math.abs(speed*0.25));
+                       fr.setPower(Math.abs(speed*0.25));
+                       fl.setPower(Math.abs(speed*0.25));
+                     } else if (Math.abs(curbrposition - orgbrposition) < 0.1*(Math.abs(newbrtarget - orgbrposition))){
+                       br.setPower(Math.abs(speed*0.5));
+                       bl.setPower(Math.abs(speed*0.5));
+                       fr.setPower(Math.abs(speed*0.5));
+                       fl.setPower(Math.abs(speed*0.5));
+                     } else if (Math.abs(curbrposition - orgbrposition) > 0.95*(Math.abs(newbrtarget - orgbrposition))) {
+                       br.setPower(Math.abs(speed*0.25));
+                       bl.setPower(Math.abs(speed*0.25));
+                       fr.setPower(Math.abs(speed*0.25));
+                       fl.setPower(Math.abs(speed*0.25));
+                     } else if (Math.abs(curbrposition - orgbrposition) > 0.9*(Math.abs(newbrtarget - orgbrposition))) {
+                       br.setPower(Math.abs(speed*0.25));
+                       bl.setPower(Math.abs(speed*0.25));
+                       fr.setPower(Math.abs(speed*0.25));
+                       fl.setPower(Math.abs(speed*0.25));
+                     } else {
+                       br.setPower(Math.abs(speed));
+                       bl.setPower(Math.abs(speed));
+                       fr.setPower(Math.abs(speed));
+                       fl.setPower(Math.abs(speed));
+                     }
 
                 // Display it for the driver.
                 telemetry.addData("Path: ", "Running");
@@ -425,11 +467,10 @@ public class vuforiatest extends LinearOpMode {
 
 
             telemetry.addData("FinalPos: ", String.valueOf((br.getCurrentPosition())/COUNTS_PER_INCH));
-            //sleep(2000);
 
             //telemetry.addData("DistanceTraveled: ", String.valueOf(br.getCurrentPosition()-x));
             telemetry.update();
-            //sleep(2000);
+
             br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
