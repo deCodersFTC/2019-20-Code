@@ -45,7 +45,7 @@ public class vuforiatest extends LinearOpMode {
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                                       (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double     DRIVE_SPEED             = 0.8;
-    static final double     TURN_SPEED              = 0.75;
+    static final double     TURN_SPEED              = 0.25;
     static final double     SLIDE_SPEED             = 0.5;
 
     /*
@@ -142,7 +142,6 @@ public class vuforiatest extends LinearOpMode {
       int stone_position = detect_skystone_position();
       int distanceFoundation = 80 + (stone_position - 1)*8;
       pickSkystone();
-      sleep(1000);
       turnLeft(90);
       dropSkystone();
       backward(DRIVE_SPEED, distanceFoundation);
@@ -151,68 +150,9 @@ public class vuforiatest extends LinearOpMode {
       backward(DRIVE_SPEED, 12);
       Foundation(1, 0.5, 1.0);
       foundationMotor.setPower(0.25);
-      forward(0.2, 36);
+      forward(0.2, 40);
       Foundation(1, -0.5, 1.0);
-      slideLeft(50);
-
-
-        // We should be in front of the stone to be picked
-        /*
-        extend(1, 0.5, 2);
-        forward(DRIVE_SPEED, 8.5);
-        grab.setPower(1);
-        sleep(2500);
-        grab.setPower(0);
-        extend(1, -1.5, 2);
-        grab.setPower(-0.4);
-        extend(1, 1, 2);
-        backward(DRIVE_SPEED, 4);
-        AccurateTurn(90);
-        forward(DRIVE_SPEED, distanceFoundation);
-        AccurateTurn(-90);
-        forward(DRIVE_SPEED, 8);
-        grab.setPower(0.75);
-        sleep(500);
-        grab.setPower(0);
-        extend(1, 1.5, 2);
-        slideLeft(12);
-        backward(DRIVE_SPEED, 4);
-        AccurateTurn(180);
-        backward(DRIVE_SPEED, 4);
-        foundationMotor.setPower(1);
-        sleep(1000);
-        foundationMotor.setPower(0);
-        */
-
-        /* Arul: Temporarily commented out Repositioning code for Vuforia testing
-        Orientation runangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        float beginangle = runangles.firstAngle;
-        forward(DRIVE_SPEED, 30);
-        slideLeft(30);
-        turnRight(90);
-        Foundation(1, 0.75, 2.0);
-        foundationMotor.setPower(1);
-        slideRight(44);
-        Foundation(1, -0.75, 2.0);
-        Orientation intermediateangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        float superangle = intermediateangles.firstAngle;
-        turnRight(superangle - beginangle);
-        backward(DRIVE_SPEED, 5);
-        slideRight(44);
-        forward(DRIVE_SPEED, 56);
-        slideLeft(38);
-        Orientation interangle2 = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        float supeangel = interangle2.firstAngle;
-        turnRight(supeangel - beginangle - 90);
-        Foundation(1, 0.6, 2.0);
-        slideLeft(30);
-        Foundation(1, -0.6, 2.0);
-
-
-
-        telemetry.addData("Path", "Complete");
-        telemetry.update();
-        */
+      slideLeft(55);
 
       if (tfod != null) {
           tfod.shutdown();
@@ -224,7 +164,6 @@ public class vuforiatest extends LinearOpMode {
     }
 
     private void pickSkystone(){
-      turnLeft(180);
       backward(DRIVE_SPEED, 10);
       Foundation(1, 0.5, 1.0);
       forward(DRIVE_SPEED, 10);
@@ -236,18 +175,18 @@ public class vuforiatest extends LinearOpMode {
       int stonePosition = 1;
 
       if(opModeIsActive()){
-        forward(DRIVE_SPEED, 22);
+        backward(DRIVE_SPEED, 20);
 
         if (!skystoneFound) {
           if(isSkystone()){
             telemetry.addData("Position 1: ", "Skystone");
             telemetry.update();
             skystoneFound = true;
-            slideLeft(4);
+            slideRight(4);
           }
           else{
             telemetry.addData("Position 1: ", "Stone");
-            slideRight(10);
+            slideLeft(10);
             telemetry.update();
           }
 
@@ -258,11 +197,11 @@ public class vuforiatest extends LinearOpMode {
             telemetry.update();
             skystoneFound = true;
             stonePosition = 2;
-            slideLeft(4);
+            slideRight(4);
           }
           else{
             telemetry.addData("Position 2: ", "Stone");
-            slideRight(8);
+            slideLeft(8);
             telemetry.update();
           }
         }
