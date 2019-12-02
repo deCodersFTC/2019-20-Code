@@ -327,7 +327,7 @@ public class EncoderDrive extends LinearOpMode {
         encoderDrive(SLIDE_SPEED, distance, -distance, distance, -distance,5);
     }
 
-
+//duffeknygaard19@JLS
     public void AccurateTurn(double degrees){
         degrees *= -1;
         Orientation turnAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);

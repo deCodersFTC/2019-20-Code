@@ -138,21 +138,27 @@ public class vuforiatest extends LinearOpMode {
 
       // Wait for the game to start (driver presses PLAY)
       waitForStart();
-
+      Orientation runangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+      float beginangle = runangles.firstAngle;
       int stone_position = detect_skystone_position();
-      int distanceFoundation = 80 + (stone_position - 1)*8;
+      int distanceFoundation = 88 + (stone_position - 1)*8;
       pickSkystone();
-      turnLeft(90);
+      foundationMotor.setPower(0.2);
+      Orientation intermediateangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+      float currentangle = intermediateangles.firstAngle;
+      turnLeft(beginangle - currentangle + 90);
       dropSkystone();
+      foundationMotor.setPower(0);
       backward(DRIVE_SPEED, distanceFoundation);
       //forward(DRIVE_SPEED, distanceFoundation+24);
       turnLeft(-90);
-      backward(DRIVE_SPEED, 8);
+      backward(1, 12.5);
       Foundation(1, 0.5, 1.0);
-      foundationMotor.setPower(0.25);
-      forward(0.2, 40);
-      Foundation(1, -0.5, 1.0);
-      slideLeft(55);
+      foundationMotor.setPower(1.0);
+      forward(1, 34);
+      foundationMotor.setPower(0);
+      Foundation(0.5, -0.5, 1.0);
+      slideLeft(63, 0.74);
 
       if (tfod != null) {
           tfod.shutdown();
@@ -160,13 +166,13 @@ public class vuforiatest extends LinearOpMode {
     }
 
     private void dropSkystone(){
-      Foundation(1, -0.5, 1.0);
+      Foundation(0.5, -0.5, 1.0);
     }
 
     private void pickSkystone(){
-      backward(DRIVE_SPEED, 10);
-      Foundation(1, 0.5, 1.0);
-      forward(DRIVE_SPEED, 10);
+      backward(1, 8);
+      Foundation(1, 0.6, 1.0);
+      forward(1, 7);
     }
 
     private int detect_skystone_position(){
@@ -175,18 +181,18 @@ public class vuforiatest extends LinearOpMode {
       int stonePosition = 1;
 
       if(opModeIsActive()){
-        backward(DRIVE_SPEED, 18);
+        backward(1, 21.5);
 
         if (!skystoneFound) {
           if(isSkystone()){
             telemetry.addData("Position 1: ", "Skystone");
             telemetry.update();
             skystoneFound = true;
-            slideRight(4);
+            slideRight(6);
           }
           else{
             telemetry.addData("Position 1: ", "Stone");
-            slideLeft(10);
+            slideLeft(10, SLIDE_SPEED);
             telemetry.update();
           }
 
@@ -201,7 +207,7 @@ public class vuforiatest extends LinearOpMode {
           }
           else{
             telemetry.addData("Position 2: ", "Stone");
-            slideLeft(8);
+            slideLeft(8, SLIDE_SPEED);
             telemetry.update();
           }
         }
@@ -233,9 +239,9 @@ public class vuforiatest extends LinearOpMode {
        double dis = 5/4 * inches;
        encoderDrive(SLIDE_SPEED, -dis, -dis, dis, dis, 5.0);
      }
-     public void slideLeft(double inches){
+     public void slideLeft(double inches, double speed){
        double dis = 5/4 * inches;
-       encoderDrive(SLIDE_SPEED, dis, dis, -dis, -dis, 5.0);
+       encoderDrive(speed, dis, dis, -dis, -dis, 5.0);
     }
     public void turnLeft(double degrees){
       double dis = (degrees * (3.14 * 23/ 360));
@@ -329,7 +335,7 @@ public class vuforiatest extends LinearOpMode {
     public void Foundation(double speed, double fmove, double timeoutS){
         int newfmovetarget;
         if (opModeIsActive()){
-          newfmovetarget = foundationMotor.getCurrentPosition() + (int)(fmove * COUNTS_PER_INCH);
+          newfmovetarget = foundationMotor.getCurrentPosition() + (int)(fmove * COUNTS_PER_MOTOR_REV);
           foundationMotor.setTargetPosition(newfmovetarget);
           foundationMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
           runtime.reset();
@@ -362,7 +368,7 @@ public class vuforiatest extends LinearOpMode {
         int newfltarget;
         boolean start_stop_opt = false;
 
-        if (speed < 0.5 || brInches < 5) {
+        if (speed < 0.75 || brInches < 5) {
           start_stop_opt = false;
         } else {
           start_stop_opt = true;
@@ -505,7 +511,7 @@ public class vuforiatest extends LinearOpMode {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
             "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minimumConfidence = 0.8;
+        tfodParameters.minimumConfidence = 0.75;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
