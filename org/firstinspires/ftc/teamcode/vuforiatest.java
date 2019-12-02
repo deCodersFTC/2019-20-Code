@@ -141,7 +141,7 @@ public class vuforiatest extends LinearOpMode {
       Orientation runangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
       float beginangle = runangles.firstAngle;
       int stone_position = detect_skystone_position();
-      int distanceFoundation = 88 + (stone_position - 1)*8;
+      int distanceFoundation = 78 + (stone_position - 1)*8;
       pickSkystone();
       foundationMotor.setPower(0.2);
       Orientation intermediateangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
@@ -158,7 +158,9 @@ public class vuforiatest extends LinearOpMode {
       forward(1, 34);
       foundationMotor.setPower(0);
       Foundation(0.5, -0.5, 1.0);
-      slideLeft(63, 0.74);
+      slideLeft(30, 0.74);
+      backward(1.0, 4);
+      slideLeft(33, 0.74);
 
       if (tfod != null) {
           tfod.shutdown();
