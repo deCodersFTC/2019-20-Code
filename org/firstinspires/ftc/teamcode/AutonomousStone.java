@@ -21,8 +21,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.Came
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
-@Autonomous(name="Vuforia Test", group="Pushbot")
-public class vuforiatest extends LinearOpMode {
+@Autonomous(name="AutonomousStone", group="Pushbot")
+public class AutonomousStone extends LinearOpMode {
 
     /* Declare OpMode members. */
     private ElapsedTime     runtime = new ElapsedTime();
@@ -138,6 +138,7 @@ public class vuforiatest extends LinearOpMode {
 
       // Wait for the game to start (driver presses PLAY)
       waitForStart();
+
       Orientation runangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
       float beginangle = runangles.firstAngle;
       int stone_position = detect_skystone_position();
@@ -155,9 +156,11 @@ public class vuforiatest extends LinearOpMode {
       backward(1, 12.5);
       Foundation(1, 0.5, 1.0);
       foundationMotor.setPower(1.0);
-      forward(1, 34);
+
+      forward(1, 36);
       foundationMotor.setPower(0);
       Foundation(0.5, -0.5, 1.0);
+
       slideLeft(30, 0.74);
       backward(1.0, 4);
       slideLeft(33, 0.74);
@@ -194,18 +197,25 @@ public class vuforiatest extends LinearOpMode {
           }
           else{
             telemetry.addData("Position 1: ", "Stone");
-            slideLeft(10, SLIDE_SPEED);
+            slideLeft(12, 0.7);
             telemetry.update();
+            backward(1.0, 2);
           }
 
         }
+        /*
+        Orientation intermediateangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        float currentangle = intermediateangles.firstAngle;
+        turnLeft(0 - currentangle);
+        */
+
         if (!skystoneFound) {
           if(isSkystone()){
             telemetry.addData("Position 2: ", "Skystone");
             telemetry.update();
             skystoneFound = true;
             stonePosition = 2;
-            slideRight(4);
+            slideRight(6);
           }
           else{
             telemetry.addData("Position 2: ", "Stone");
@@ -213,8 +223,12 @@ public class vuforiatest extends LinearOpMode {
             telemetry.update();
           }
         }
+
         if(!skystoneFound){
           stonePosition = 3;
+          telemetry.addData("Position 3: ", "Skystone");
+          telemetry.update();
+          backward(1, 2);
         }
     }
     return stonePosition;
@@ -238,20 +252,20 @@ public class vuforiatest extends LinearOpMode {
      }
 
      public void slideRight(double inches){
-       double dis = 5/4 * inches;
+       double dis = 1.095 * inches;
        encoderDrive(SLIDE_SPEED, -dis, -dis, dis, dis, 5.0);
      }
      public void slideLeft(double inches, double speed){
-       double dis = 5/4 * inches;
+       double dis = 1.08 * inches;
        encoderDrive(speed, dis, dis, -dis, -dis, 5.0);
     }
     public void turnLeft(double degrees){
-      double dis = (degrees * (3.14 * 23/ 360));
+      double dis = (degrees * (3.14 * 24/ 360));
       encoderDrive(TURN_SPEED, dis, dis, dis, dis, 5.0);
     }
     //a --> a* 16.25PI/360
     public void turnRight(double degrees){
-      double dis = (degrees * (3.14 * 23/ 360));
+      double dis = (degrees * (3.14 * 24/ 360));
       encoderDrive(TURN_SPEED, -dis, -dis, -dis, -dis, 5.0);
     }
 
@@ -474,10 +488,7 @@ public class vuforiatest extends LinearOpMode {
             // Turn off RUN_TO_POSITION
 
 
-            telemetry.addData("FinalPos: ", String.valueOf((br.getCurrentPosition())/COUNTS_PER_INCH));
 
-            //telemetry.addData("DistanceTraveled: ", String.valueOf(br.getCurrentPosition()-x));
-            telemetry.update();
 
             br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

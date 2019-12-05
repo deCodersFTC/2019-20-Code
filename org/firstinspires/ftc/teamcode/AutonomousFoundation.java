@@ -14,8 +14,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Autonomous(name="Indiv Auto Test", group="Pushbot")
-public class IndivAutoTest extends LinearOpMode {
+@Autonomous(name="AutonomousFoundation", group="Pushbot")
+public class AutonomousFoundation extends LinearOpMode {
 
     /* Declare OpMode members. */
     private ElapsedTime     runtime = new ElapsedTime();
@@ -89,20 +89,30 @@ public class IndivAutoTest extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         if(opModeIsActive()){
-        forward(20);
-        backward(20);
         slideLeft(20);
         slideRight(20);
+        /*
+        Orientation runangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        float beginangle = runangles.firstAngle;
+        forward(27);
+        slideLeft(30);
         turnRight(90);
-        sleep(2000);
-        turnRight(90);
-        sleep(2000);
-        turnLeft(90);
-        sleep(2000);
-        turnLeft(90);
-        sleep(2000);
+        Foundation(1, 0.75, 2.0);
+        foundationMotor.setPower(1);
+        slideRight(44);
 
 
+        turnLeft(270);
+        forward(6.9);
+        foundationMotor.setPower(-1);
+        Orientation intermediateangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        float superangle = intermediateangles.firstAngle;
+        turnRight(superangle - beginangle);
+        slideRight(50);
+
+
+
+        */
         telemetry.addData("Path", "Complete");
         telemetry.update();
       }
