@@ -142,7 +142,7 @@ public class AutonomousStone extends LinearOpMode {
       Orientation runangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
       float beginangle = runangles.firstAngle;
       int stone_position = detect_skystone_position();
-      int distanceFoundation = 78 + (stone_position - 1)*8;
+      int distanceFoundation = 80 + (stone_position - 1)*10;
       pickSkystone();
       foundationMotor.setPower(0.2);
       Orientation intermediateangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
@@ -153,17 +153,17 @@ public class AutonomousStone extends LinearOpMode {
       backward(DRIVE_SPEED, distanceFoundation);
       //forward(DRIVE_SPEED, distanceFoundation+24);
       turnLeft(-90);
-      backward(1, 12.5);
+      backward(1, 12);
       Foundation(1, 0.5, 1.0);
       foundationMotor.setPower(1.0);
 
-      forward(1, 36);
+      forward(1, 38);
       foundationMotor.setPower(0);
       Foundation(0.5, -0.5, 1.0);
 
-      slideLeft(30, 0.74);
+      slideLeft(30, 1);
       backward(1.0, 4);
-      slideLeft(33, 0.74);
+      slideLeft(16, 1);
 
       if (tfod != null) {
           tfod.shutdown();
@@ -197,9 +197,8 @@ public class AutonomousStone extends LinearOpMode {
           }
           else{
             telemetry.addData("Position 1: ", "Stone");
-            slideLeft(12, 0.7);
+            slideLeft(8, 1);
             telemetry.update();
-            backward(1.0, 2);
           }
 
         }
@@ -219,7 +218,7 @@ public class AutonomousStone extends LinearOpMode {
           }
           else{
             telemetry.addData("Position 2: ", "Stone");
-            slideLeft(8, SLIDE_SPEED);
+            slideLeft(4, 1);
             telemetry.update();
           }
         }
@@ -228,7 +227,6 @@ public class AutonomousStone extends LinearOpMode {
           stonePosition = 3;
           telemetry.addData("Position 3: ", "Skystone");
           telemetry.update();
-          backward(1, 2);
         }
     }
     return stonePosition;
@@ -253,7 +251,7 @@ public class AutonomousStone extends LinearOpMode {
 
      public void slideRight(double inches){
        double dis = 1.095 * inches;
-       encoderDrive(SLIDE_SPEED, -dis, -dis, dis, dis, 5.0);
+       encoderDrive(1, -dis, -dis, dis, dis, 5.0);
      }
      public void slideLeft(double inches, double speed){
        double dis = 1.08 * inches;
@@ -261,12 +259,12 @@ public class AutonomousStone extends LinearOpMode {
     }
     public void turnLeft(double degrees){
       double dis = (degrees * (3.14 * 24/ 360));
-      encoderDrive(TURN_SPEED, dis, dis, dis, dis, 5.0);
+      encoderDrive(1, dis, dis, dis, dis, 5.0);
     }
     //a --> a* 16.25PI/360
     public void turnRight(double degrees){
       double dis = (degrees * (3.14 * 24/ 360));
-      encoderDrive(TURN_SPEED, -dis, -dis, -dis, -dis, 5.0);
+      encoderDrive(1, -dis, -dis, -dis, -dis, 5.0);
     }
 
     public void AccurateTurn(double degrees){
@@ -387,7 +385,7 @@ public class AutonomousStone extends LinearOpMode {
         if (speed < 0.75 || brInches < 5) {
           start_stop_opt = false;
         } else {
-          start_stop_opt = true;
+          start_stop_opt = false;
         }
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
