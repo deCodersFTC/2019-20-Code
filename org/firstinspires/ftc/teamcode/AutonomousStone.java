@@ -165,7 +165,7 @@ public class AutonomousStone extends LinearOpMode {
 
       turnRight(currentangle - 90);
 
-      telemetry.addData(" Heading after turn", currentangle2);
+      telemetry.addData(" Heading after turn", currentangle);
       telemetry.update();
 
       backward(DRIVE_SPEED, distanceFoundation);
@@ -176,13 +176,13 @@ public class AutonomousStone extends LinearOpMode {
 
       turnRight(currentangle);
 
-      backward(1, 12);
+      backward(1, 10);
       Foundation(1, 0.5, 1.0);
       foundationMotor.setPower(1.0);
 
-      forward(1, 38);
+      forward(1, 34);
       foundationMotor.setPower(0);
-      Foundation(0.5, -0.5, 1.0);
+      Foundation(1, -0.5, 1.0);
 
       slideLeft(30, 1);
       backward(1.0, 4);
