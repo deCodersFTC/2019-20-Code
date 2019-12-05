@@ -136,23 +136,46 @@ public class AutonomousStone extends LinearOpMode {
       telemetry.addData("Status", "Encoders Reset. Ready");    //
       telemetry.update();
 
+      Orientation runangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+      float beginangle = runangles.firstAngle;
+      telemetry.addData("Initial Heading", beginangle);
+      telemetry.update();
+
       // Wait for the game to start (driver presses PLAY)
       waitForStart();
 
-      Orientation runangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-      float beginangle = runangles.firstAngle;
+
+      // Detection of Skystone
       int stone_position = detect_skystone_position();
-      int distanceFoundation = 80 + (stone_position - 1)*10;
       pickSkystone();
-      foundationMotor.setPower(0.2);
+
+      int distanceFoundation = 80;
       Orientation intermediateangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
       float currentangle = intermediateangles.firstAngle;
+
+      foundationMotor.setPower(0.2);
+      telemetry.addData("Heading before turn", currentangle);
+      telemetry.update();
+
       turnLeft(beginangle - currentangle + 90);
-      dropSkystone();
-      foundationMotor.setPower(0);
+      dropSkystone(stone_position);
+
+      intermediateangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+      currentangle = intermediateangles.firstAngle;
+
+      turnRight(currentangle - 90);
+
+      telemetry.addData(" Heading after turn", currentangle2);
+      telemetry.update();
+
       backward(DRIVE_SPEED, distanceFoundation);
-      //forward(DRIVE_SPEED, distanceFoundation+24);
-      turnLeft(-90);
+      turnRight(90);
+
+      intermediateangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+      currentangle = intermediateangles.firstAngle;
+
+      turnRight(currentangle);
+
       backward(1, 12);
       Foundation(1, 0.5, 1.0);
       foundationMotor.setPower(1.0);
@@ -170,14 +193,19 @@ public class AutonomousStone extends LinearOpMode {
       }
     }
 
-    private void dropSkystone(){
+    private void dropSkystone(int stone_position){
       Foundation(0.5, -0.5, 1.0);
+      if (stone_position == 2) {
+        backward(1, 10);
+      } else if (stone_position == 3) {
+        backward(1, 16);
+      }
     }
 
     private void pickSkystone(){
       backward(1, 8);
       Foundation(1, 0.6, 1.0);
-      forward(1, 7);
+      forward(1, 6);
     }
 
     private int detect_skystone_position(){
@@ -186,7 +214,7 @@ public class AutonomousStone extends LinearOpMode {
       int stonePosition = 1;
 
       if(opModeIsActive()){
-        backward(1, 21.5);
+        backward(0.8, 21.5);
 
         if (!skystoneFound) {
           if(isSkystone()){
@@ -197,16 +225,11 @@ public class AutonomousStone extends LinearOpMode {
           }
           else{
             telemetry.addData("Position 1: ", "Stone");
-            slideLeft(8, 1);
             telemetry.update();
+            slideLeft(8, 0.5);
           }
 
         }
-        /*
-        Orientation intermediateangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        float currentangle = intermediateangles.firstAngle;
-        turnLeft(0 - currentangle);
-        */
 
         if (!skystoneFound) {
           if(isSkystone()){
@@ -218,8 +241,10 @@ public class AutonomousStone extends LinearOpMode {
           }
           else{
             telemetry.addData("Position 2: ", "Stone");
-            slideLeft(4, 1);
             telemetry.update();
+            slideLeft(5, 0.5);
+            backward(1, 1);
+            //sleep(20000);
           }
         }
 
@@ -251,20 +276,20 @@ public class AutonomousStone extends LinearOpMode {
 
      public void slideRight(double inches){
        double dis = 1.095 * inches;
-       encoderDrive(1, -dis, -dis, dis, dis, 5.0);
+       encoderDrive(1, -dis, -dis, dis, dis, 10);
      }
      public void slideLeft(double inches, double speed){
        double dis = 1.08 * inches;
-       encoderDrive(speed, dis, dis, -dis, -dis, 5.0);
+       encoderDrive(speed, dis, dis, -dis, -dis, 10);
     }
     public void turnLeft(double degrees){
-      double dis = (degrees * (3.14 * 24/ 360));
-      encoderDrive(1, dis, dis, dis, dis, 5.0);
+      double dis = (degrees * (3.14 * 24.1/ 360));
+      encoderDrive(1, dis, dis, dis, dis, 10);
     }
     //a --> a* 16.25PI/360
     public void turnRight(double degrees){
-      double dis = (degrees * (3.14 * 24/ 360));
-      encoderDrive(1, -dis, -dis, -dis, -dis, 5.0);
+      double dis = (degrees * (3.14 * 24.1/ 360));
+      encoderDrive(1, -dis, -dis, -dis, -dis, 10);
     }
 
     public void AccurateTurn(double degrees){
@@ -332,14 +357,14 @@ public class AutonomousStone extends LinearOpMode {
                    (extend.isBusy())) {
 
                 // Display it for the driver.
-                telemetry.addData("Extend: ", "Running");
-                telemetry.addData("exmove: ", String.valueOf(extend.isBusy()));
-                telemetry.update();
+                //telemetry.addData("Extend: ", "Running");
+                //telemetry.addData("exmove: ", String.valueOf(extend.isBusy()));
+                //telemetry.update();
             }
             // Display it for the driver.
-            telemetry.addData("Extend: ", "Complete");
-            telemetry.addData("exmove: ", String.valueOf(extend.isBusy()));
-            telemetry.update();
+            //telemetry.addData("Extend: ", "Complete");
+            //telemetry.addData("exmove: ", String.valueOf(extend.isBusy()));
+            //telemetry.update();
 
             extend.setPower(0);
             extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -359,14 +384,14 @@ public class AutonomousStone extends LinearOpMode {
                  (foundationMotor.isBusy())) {
 
               // Display it for the driver.
-              telemetry.addData("Foundation: ", "Running");
-              telemetry.addData("fmove: ", String.valueOf(foundationMotor.isBusy()));
-              telemetry.update();
+              //telemetry.addData("Foundation: ", "Running");
+              //telemetry.addData("fmove: ", String.valueOf(foundationMotor.isBusy()));
+              //telemetry.update();
           }
           // Display it for the driver.
-          telemetry.addData("Foundation: ", "Complete");
-          telemetry.addData("fmove: ", String.valueOf(foundationMotor.isBusy()));
-          telemetry.update();
+          //telemetry.addData("Foundation: ", "Complete");
+          //telemetry.addData("fmove: ", String.valueOf(foundationMotor.isBusy()));
+          //telemetry.update();
 
           foundationMotor.setPower(0);
           foundationMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -382,10 +407,10 @@ public class AutonomousStone extends LinearOpMode {
         int newfltarget;
         boolean start_stop_opt = false;
 
-        if (speed < 0.75 || brInches < 5) {
+        if (brInches < 5) {
           start_stop_opt = false;
         } else {
-          start_stop_opt = false;
+          start_stop_opt = true;
         }
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
@@ -401,12 +426,10 @@ public class AutonomousStone extends LinearOpMode {
             fr.setTargetPosition(newfrtarget);
             fl.setTargetPosition(newfltarget);
 
-            telemetry.addData("CurrentPos: ", String.valueOf(br.getCurrentPosition()));
+            //telemetry.addData("CurrentPos: ", String.valueOf(br.getCurrentPosition()));
 
-            telemetry.addData("TargetPos: ", String.valueOf(newbrtarget));
-            telemetry.update();
-
-
+            //telemetry.addData("TargetPos: ", String.valueOf(newbrtarget));
+            //telemetry.update();
 
             // Turn On RUN_TO_POSITION
             br.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -417,10 +440,10 @@ public class AutonomousStone extends LinearOpMode {
             // reset the timeout time and start motion.
             runtime.reset();
             if (start_stop_opt) {
-              br.setPower(Math.abs(speed*0.25));
-              bl.setPower(Math.abs(speed*0.25));
-              fr.setPower(Math.abs(speed*0.25));
-              fl.setPower(Math.abs(speed*0.25));
+              br.setPower(Math.abs(speed*0.1));
+              bl.setPower(Math.abs(speed*0.1));
+              fr.setPower(Math.abs(speed*0.1));
+              fl.setPower(Math.abs(speed*0.1));
             } else {
               // no point optimizing
               br.setPower(Math.abs(speed));
@@ -444,37 +467,50 @@ public class AutonomousStone extends LinearOpMode {
                    (runtime.seconds() < timeoutS) &&
                    (br.isBusy() && fr.isBusy() && fl.isBusy() && bl.isBusy())) {
                      int curbrposition = br.getCurrentPosition();
-                     if (Math.abs(curbrposition - orgbrposition) < 0.05*(Math.abs(newbrtarget - orgbrposition))) {
-                       br.setPower(Math.abs(speed*0.25));
-                       bl.setPower(Math.abs(speed*0.25));
-                       fr.setPower(Math.abs(speed*0.25));
-                       fl.setPower(Math.abs(speed*0.25));
-                     } else if (Math.abs(curbrposition - orgbrposition) < 0.1*(Math.abs(newbrtarget - orgbrposition))){
+                     if (start_stop_opt) {
+
+                     if (Math.abs(curbrposition - orgbrposition) < 0.01*(Math.abs(newbrtarget - orgbrposition))) {
+                       br.setPower(Math.abs(speed*0.1));
+                       bl.setPower(Math.abs(speed*0.1));
+                       fr.setPower(Math.abs(speed*0.1));
+                       fl.setPower(Math.abs(speed*0.1));
+                     } else if (Math.abs(curbrposition - orgbrposition) < 0.2*(Math.abs(newbrtarget - orgbrposition))){
+                       br.setPower(Math.abs(speed*0.2));
+                       bl.setPower(Math.abs(speed*0.2));
+                       fr.setPower(Math.abs(speed*0.2));
+                       fl.setPower(Math.abs(speed*0.2));
+                     } else if (Math.abs(curbrposition - orgbrposition) < 0.3*(Math.abs(newbrtarget - orgbrposition))){
                        br.setPower(Math.abs(speed*0.5));
                        bl.setPower(Math.abs(speed*0.5));
                        fr.setPower(Math.abs(speed*0.5));
                        fl.setPower(Math.abs(speed*0.5));
-                     } else if (Math.abs(curbrposition - orgbrposition) > 0.95*(Math.abs(newbrtarget - orgbrposition))) {
-                       br.setPower(Math.abs(speed*0.25));
-                       bl.setPower(Math.abs(speed*0.25));
-                       fr.setPower(Math.abs(speed*0.25));
-                       fl.setPower(Math.abs(speed*0.25));
-                     } else if (Math.abs(curbrposition - orgbrposition) > 0.9*(Math.abs(newbrtarget - orgbrposition))) {
-                       br.setPower(Math.abs(speed*0.25));
-                       bl.setPower(Math.abs(speed*0.25));
-                       fr.setPower(Math.abs(speed*0.25));
-                       fl.setPower(Math.abs(speed*0.25));
+                     } else if (Math.abs(curbrposition - orgbrposition) > 0.98*(Math.abs(newbrtarget - orgbrposition))) {
+                       br.setPower(Math.abs(speed*0.2));
+                       bl.setPower(Math.abs(speed*0.2));
+                       fr.setPower(Math.abs(speed*0.2));
+                       fl.setPower(Math.abs(speed*0.2));
+                     } else if (Math.abs(curbrposition - orgbrposition) > 0.99*(Math.abs(newbrtarget - orgbrposition))) {
+                       br.setPower(Math.abs(speed*0.1));
+                       bl.setPower(Math.abs(speed*0.1));
+                       fr.setPower(Math.abs(speed*0.1));
+                       fl.setPower(Math.abs(speed*0.1));
                      } else {
                        br.setPower(Math.abs(speed));
                        bl.setPower(Math.abs(speed));
                        fr.setPower(Math.abs(speed));
                        fl.setPower(Math.abs(speed));
                      }
+                   } else {
+                     br.setPower(Math.abs(speed));
+                     bl.setPower(Math.abs(speed));
+                     fr.setPower(Math.abs(speed));
+                     fl.setPower(Math.abs(speed));
+                   }
 
                 // Display it for the driver.
-                telemetry.addData("Path: ", "Running");
-                telemetry.addData("br: ", String.valueOf(br.isBusy()));
-                telemetry.update();
+                //telemetry.addData("Path: ", "Running");
+                //telemetry.addData("br: ", String.valueOf(br.isBusy()));
+                //telemetry.update();
             }
 
             // Stop all motion;
@@ -484,9 +520,6 @@ public class AutonomousStone extends LinearOpMode {
             bl.setPower(0);
 
             // Turn off RUN_TO_POSITION
-
-
-
 
             br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
