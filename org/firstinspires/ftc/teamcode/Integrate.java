@@ -53,6 +53,28 @@ public class Integrate extends LinearOpMode {
         runtime.reset();
 
         while (opModeIsActive()) {
+          if(gamepad1.dpad_up){
+            fl  = hardwareMap.get(DcMotor.class, "fl");
+            fr = hardwareMap.get(DcMotor.class, "fr");
+            bl  = hardwareMap.get(DcMotor.class, "bl");
+            br = hardwareMap.get(DcMotor.class, "br");
+
+            fl.setDirection(DcMotor.Direction.FORWARD);
+            fr.setDirection(DcMotor.Direction.REVERSE);
+            bl.setDirection(DcMotor.Direction.FORWARD);
+            br.setDirection(DcMotor.Direction.REVERSE);
+          }
+          else if(gamepad1.dpad_down){
+            fl  = hardwareMap.get(DcMotor.class, "br");
+            fr = hardwareMap.get(DcMotor.class, "bl");
+            bl  = hardwareMap.get(DcMotor.class, "fr");
+            br = hardwareMap.get(DcMotor.class, "fl");
+
+            fl.setDirection(DcMotor.Direction.FORWARD);
+            fr.setDirection(DcMotor.Direction.REVERSE);
+            bl.setDirection(DcMotor.Direction.FORWARD);
+            br.setDirection(DcMotor.Direction.REVERSE);
+          }
 
 			      double LFP;
             double RFP;
