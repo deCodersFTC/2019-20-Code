@@ -20,6 +20,7 @@ public class Integrate extends LinearOpMode {
     private DcMotor br;
     private DcMotor extend;
     private CRServo grab;
+    private CRServo capstone;
     double PowerX;
     double PowerY;
     double PowerZ;
@@ -33,6 +34,7 @@ public class Integrate extends LinearOpMode {
 
         extend = hardwareMap.get(DcMotor.class, "extend");
         grab = hardwareMap.get(CRServo.class, "grab");
+        capstone = hardwareMap.get(CRServo.class, "capstone");
         foundation = hardwareMap.get(DcMotor.class, "foundation");
         fl  = hardwareMap.get(DcMotor.class, "fl");
         fr = hardwareMap.get(DcMotor.class, "fr");
@@ -152,7 +154,18 @@ public class Integrate extends LinearOpMode {
             PowerY *= sens;
 
 
+            if(gamepad2.b){
+              capstone.setPower(0.5);
+            }
+            else if(gamepad2.x){
+              capstone.setPower(-0.5);
+            }
+            else{
+              capstone.setPower(0);
+            }
+
             PowerZ = (gamepad1.left_trigger - gamepad1.right_trigger) * sensitivity;
+
             // if(gamepad2.x){
             //   PowerZ = -0.5;
             // }
