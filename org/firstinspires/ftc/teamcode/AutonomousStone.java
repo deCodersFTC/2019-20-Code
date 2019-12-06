@@ -48,6 +48,16 @@ public class AutonomousStone extends LinearOpMode {
     static final double     TURN_SPEED              = 0.5;
     static final double     SLIDE_SPEED             = 0.5;
 
+
+    private boolean sideBlue = false;
+
+    private int mirror;
+
+
+
+
+
+
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
      * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
@@ -79,6 +89,12 @@ public class AutonomousStone extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+      if(sideBlue){
+        mirror = 1;
+      }
+      else{
+        mirror = -1;
+      }
       initVuforia();
 
       if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
@@ -157,13 +173,13 @@ public class AutonomousStone extends LinearOpMode {
       telemetry.addData("Heading before turn", currentangle);
       telemetry.update();
 
-      turnLeft(beginangle - currentangle + 90);
+      turnLeft(beginangle - (currentangle * mirror) + 90);
       dropSkystone(stone_position);
 
       intermediateangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
       currentangle = intermediateangles.firstAngle;
 
-      turnRight(currentangle - 90);
+      turnRight(currentangle - (90 * mirror));
 
       telemetry.addData(" Heading after turn", currentangle);
       telemetry.update();
@@ -174,7 +190,7 @@ public class AutonomousStone extends LinearOpMode {
       intermediateangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
       currentangle = intermediateangles.firstAngle;
 
-      turnRight(currentangle);
+      turnRight(currentangle * mirror);
 
       backward(1, 10);
       Foundation(1, 0.5, 1.0);
@@ -275,20 +291,20 @@ public class AutonomousStone extends LinearOpMode {
      }
 
      public void slideRight(double inches){
-       double dis = 1.095 * inches;
+       double dis = 1.095 * inches * mirror;
        encoderDrive(1, -dis, -dis, dis, dis, 10);
      }
      public void slideLeft(double inches, double speed){
-       double dis = 1.08 * inches;
+       double dis = 1.08 * inches * mirror;
        encoderDrive(speed, dis, dis, -dis, -dis, 10);
     }
     public void turnLeft(double degrees){
-      double dis = (degrees * (3.14 * 24.1/ 360));
+      double dis = (degrees * (3.14 * 24.1/ 360) * mirror);
       encoderDrive(1, dis, dis, dis, dis, 10);
     }
     //a --> a* 16.25PI/360
     public void turnRight(double degrees){
-      double dis = (degrees * (3.14 * 24.1/ 360));
+      double dis = (degrees * (3.14 * 24.1/ 360) * mirror);
       encoderDrive(1, -dis, -dis, -dis, -dis, 10);
     }
 
