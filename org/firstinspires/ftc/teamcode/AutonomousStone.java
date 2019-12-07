@@ -49,7 +49,7 @@ public class AutonomousStone extends LinearOpMode {
     static final double     SLIDE_SPEED             = 0.5;
 
 
-    private boolean sideBlue = true;
+    private boolean sideBlue = false;
 
     private int mirror;
 
@@ -171,20 +171,27 @@ public class AutonomousStone extends LinearOpMode {
 
       foundationMotor.setPower(0.2);
       telemetry.addData("Heading before turn", currentangle);
-      telemetry.update();
 
       turnLeft(beginangle - (currentangle * mirror) + 90);
+
+      intermediateangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+      currentangle = intermediateangles.firstAngle;
+
+      telemetry.addData("Heading after turn", currentangle);
+
       dropSkystone(stone_position);
 
       intermediateangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
       currentangle = intermediateangles.firstAngle;
 
       turnRight(currentangle - (90 * mirror));
+      //turnRight(currentangle - (90 * mirror));
 
-      telemetry.addData(" Heading after turn", currentangle);
+      telemetry.addData(" Heading after correction", currentangle);
       telemetry.update();
 
       backward(DRIVE_SPEED, distanceFoundation);
+      //sleep(5000);
       turnRight(90);
 
       intermediateangles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
