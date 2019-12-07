@@ -21,8 +21,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.Came
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
-@Autonomous(name="AutonomousStone", group="Pushbot")
-public class AutonomousStone extends LinearOpMode {
+@Autonomous(name="AutonomousAll", group="Pushbot")
+public class AutonomousAll extends LinearOpMode {
 
     /* Declare OpMode members. */
     private ElapsedTime     runtime = new ElapsedTime();
@@ -208,7 +208,7 @@ public class AutonomousStone extends LinearOpMode {
       Foundation(1, -0.5, 1.0);
 
       slideLeft(30, 1);
-      backward(1.0, 4);
+      backward(1.0, 4 + 14);
       slideLeft(16, 1);
 
       if (tfod != null) {
