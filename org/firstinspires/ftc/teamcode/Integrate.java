@@ -161,7 +161,7 @@ public class Integrate extends LinearOpMode {
               capstone.setPower(-0.25);
             }
             else{
-              capstone.setPower(0.01);
+              capstone.setPower(-0.1);
             }
 
             PowerZ = (gamepad1.left_trigger - gamepad1.right_trigger) * sensitivity;

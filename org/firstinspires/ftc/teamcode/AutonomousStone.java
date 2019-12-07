@@ -49,7 +49,7 @@ public class AutonomousStone extends LinearOpMode {
     static final double     SLIDE_SPEED             = 0.5;
 
 
-    private boolean sideBlue = false;
+    private boolean sideBlue = true;
 
     private int mirror;
 
