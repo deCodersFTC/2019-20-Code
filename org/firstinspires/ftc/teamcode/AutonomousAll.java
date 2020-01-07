@@ -49,7 +49,7 @@ public class AutonomousAll extends LinearOpMode {
     static final double     SLIDE_SPEED             = 0.5;
 
 
-    private boolean sideBlue = false;
+    private boolean sideBlue = true;
 
     private int mirror;
 
@@ -203,13 +203,13 @@ public class AutonomousAll extends LinearOpMode {
       Foundation(1, 0.5, 1.0);
       foundationMotor.setPower(1.0);
 
-      forward(1, 34);
+      forward(1, 35);
       foundationMotor.setPower(0);
       Foundation(1, -0.5, 1.0);
 
-      slideLeft(30, 1);
-      backward(1.0, 4 + 14);
-      slideLeft(16, 1);
+      // slideLeft(35, 1);
+      // backward(1.0, 4 + 14);
+      // slideLeft(11, 1);
 
       if (tfod != null) {
           tfod.shutdown();

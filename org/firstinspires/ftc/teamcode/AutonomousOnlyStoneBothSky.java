@@ -192,7 +192,7 @@ public class AutonomousOnlyStoneBothSky extends LinearOpMode {
 
       backward(DRIVE_SPEED, distanceFoundation - 36);
       forward(DRIVE_SPEED, 12);
-      forward(52 + (stone_position - 1) * 8);
+      forward(1, 52 + (stone_position - 1) * 8);
       //sleep(5000);
       //turnRight(90);
 
