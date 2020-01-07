@@ -22,7 +22,7 @@ public class FoundationTester extends LinearOpMode {
     private Servo lift;
     private Servo LeftFoundation;
     private Servo RightFoundation;
-    private double sensitivity = 1;
+    private double sensitivity = 0.8;
 
     @Override
     public void runOpMode() {
@@ -53,19 +53,86 @@ public class FoundationTester extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+          if(gamepad1.dpad_up){
+            fl  = hardwareMap.get(DcMotor.class, "fl");
+            fr = hardwareMap.get(DcMotor.class, "fr");
+            bl  = hardwareMap.get(DcMotor.class, "bl");
+            br = hardwareMap.get(DcMotor.class, "br");
+
+            fl.setDirection(DcMotor.Direction.FORWARD);
+            fr.setDirection(DcMotor.Direction.REVERSE);
+            bl.setDirection(DcMotor.Direction.FORWARD);
+            br.setDirection(DcMotor.Direction.REVERSE);
+          }
+          else if(gamepad1.dpad_down){
+            fl  = hardwareMap.get(DcMotor.class, "br");
+            fr = hardwareMap.get(DcMotor.class, "bl");
+            bl  = hardwareMap.get(DcMotor.class, "fr");
+            br = hardwareMap.get(DcMotor.class, "fl");
+
+            fl.setDirection(DcMotor.Direction.FORWARD);
+            fr.setDirection(DcMotor.Direction.REVERSE);
+            bl.setDirection(DcMotor.Direction.FORWARD);
+            br.setDirection(DcMotor.Direction.REVERSE);
+          }
+
             double LFP;
             double RFP;
             double RBP;
             double LBP;
 
             double D = gamepad1.left_stick_y;
-            double S = gamepad1.left_stick_x;
-            double T = gamepad1.right_stick_x;
+            double S = -gamepad1.left_stick_x;
+            double T = -gamepad1.right_stick_x;
 
-            LFP = T - S - D;
-            RFP = T + S - D;
-            LBP = T - S + D;
-            RBP = T + S + D;
+            // LFP = T - S - D;
+            // RFP = T + S - D;
+            // LBP = T - S + D;
+            // RBP = T + S + D;
+
+            LFP = D + S + T;
+            RFP = D - S - T;
+            LBP = D - S + T;
+            RBP = D + S - T;
+
+
+      // This can be anywhere from 0.5 to 1.
+      // Anything lower than 0.5 is very slow, which defeats the purpose of the speedy drivetrain.
+      // Anything above 1 will break the code, please don't do this.
+      if(gamepad1.a){
+        if(sensitivity<1){
+          sensitivity = sensitivity + 0.1;
+          sleep(200);
+        }
+      }
+      else if(gamepad1.b){
+        if(sensitivity>0.4){
+          sensitivity = sensitivity - 0.1;
+          sleep(200);
+        }
+      }
+      LFP *= sensitivity;
+      LBP *= sensitivity;
+      RFP *= sensitivity;
+      RBP *= sensitivity;
+      // x *= y is a fancy way of redifining variable x so that x = x*y
+      // Same with +=, -=, and /=
+      // Just something to remember...
+
+            if(T != 0 && (D != 0 || S != 0)){
+                fl.setPower(LFP/2);
+                bl.setPower(LBP/2);
+                fr.setPower(RFP/2);
+                br.setPower(RBP/2);
+
+            }
+            else{
+                fl.setPower(LFP);
+                bl.setPower(LBP);
+                fr.setPower(RFP);
+                br.setPower(RBP);
+            }
+
 
 
             // This can be anywhere from 0.5 to 1.
@@ -122,7 +189,6 @@ public class FoundationTester extends LinearOpMode {
             }
             else{
               lift.setPosition(0);
-
             }
 
             claw.setPower((gamepad2.right_trigger-gamepad2.left_trigger));
