@@ -18,6 +18,7 @@ public class FoundationTester extends LinearOpMode {
     private DcMotor fr;
     private DcMotor bl;
     private DcMotor br;
+    private DcMotor extend;
     private CRServo claw;
     private Servo lift;
     private Servo LeftFoundation;
@@ -37,16 +38,21 @@ public class FoundationTester extends LinearOpMode {
         lift = hardwareMap.get(Servo.class, "lift");
         LeftFoundation = hardwareMap.get(Servo.class, "Left Foundation");
         RightFoundation = hardwareMap.get(Servo.class, "Right Foundation");
+        extend = hardwareMap.get(DcMotor.class, "extend");
 
         fl.setDirection(DcMotor.Direction.FORWARD);
         fr.setDirection(DcMotor.Direction.FORWARD);
         bl.setDirection(DcMotor.Direction.FORWARD);
         br.setDirection(DcMotor.Direction.FORWARD);
 
+        extend.setDirection(DcMotor.Direction.FORWARD);
+
         fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        extend.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         waitForStart();
         runtime.reset();
@@ -191,11 +197,20 @@ public class FoundationTester extends LinearOpMode {
               lift.setPosition(0);
             }
 
+            if (gampad2.a){
+              extend.setPower(0.5);
+            } elif (gamepad2.b){
+              extend.setPower(-0.5)
+            } else{
+              extend.setPower(0);
+            }
+
             claw.setPower((gamepad2.right_trigger-gamepad2.left_trigger));
 
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Motors","Left Front Power: (%.2f), Right Front Power: (%.2f), Left Back Power: (%.2f), Right Back Power: (%.2f), Sensitivity: (%.2f)", fl.getPower(), fr.getPower(), bl.getPower(), br.getPower(), sensitivity);
+            telemetry.addData("Extend Power", extend.getPower());
             telemetry.addData("Written by", "deCoders Robotics Team");
             telemetry.update();
         }
